@@ -5,55 +5,44 @@ import { Router, RouterLink } from '@angular/router';
 import { DestinationService } from '../../services/destination.service';
 import { AuthService } from '../../services/auth.service';
 import { Destination } from '../../models';
+import { VideoBackgroundComponent } from '../video-background/video-background.component';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, VideoBackgroundComponent],
   template: `
   <!-- Hero -->
   <section class="hero">
-    <div class="hero-bg"></div>
+    <app-video-background></app-video-background>
     <div class="hero-content container">
-      <div class="hero-badge">🤖 AI-Powered Travel Planning</div>
-      <h1>Discover India's<br><span class="accent">Magic Destinations</span></h1>
-      <p>Personalized itineraries, smart booking & AI recommendations — all in one place</p>
-      <!-- Search Box -->
-      <div class="search-box">
-        <div class="search-field">
-          <span class="search-icon">📍</span>
-          <input type="text" [(ngModel)]="searchFrom" placeholder="From (your city)" list="cities-from">
-          <datalist id="cities-from">
-            <option *ngFor="let c of cities" [value]="c"></option>
-          </datalist>
-        </div>
-        <div class="search-divider">→</div>
-        <div class="search-field">
-          <span class="search-icon">🏖</span>
-          <input type="text" [(ngModel)]="searchTo" placeholder="Where to?" list="cities-to">
-          <datalist id="cities-to">
-            <option *ngFor="let d of destinations" [value]="d.name"></option>
-          </datalist>
-        </div>
-        <div class="search-field">
-          <span class="search-icon">📅</span>
-          <input type="date" [(ngModel)]="searchDate" [min]="today">
-        </div>
-        <div class="search-field">
-          <span class="search-icon">👥</span>
-          <select [(ngModel)]="searchPeople">
-            <option *ngFor="let n of [1,2,3,4,5,6,7,8,9,10]" [value]="n">{{n}} {{n===1?'Person':'People'}}</option>
+      <div class="hero-headline">
+        <span class="eyebrow">Built for teams who need a simple way to create powerful travel experiences fast.</span>
+        <h1>Plan better journeys with intuitive, intelligent workflows.</h1>
+        <p>From fast itinerary ideas to seamless bookings, every step is designed to help you move quicker and deliver exceptional travel support.</p>
+      </div>
+      <div class="hero-actions">
+        <a routerLink="/auth/register" class="btn btn-primary">Get Started</a>
+        <a routerLink="/events" class="btn btn-outline">Explore Events</a>
+        <a routerLink="/actions" class="btn btn-secondary">Open Action Center</a>
+      </div>
+      <div class="hero-controls">
+        <div class="control-card">
+          <label>Destination type</label>
+          <select [(ngModel)]="selectedTheme">
+            <option *ngFor="let theme of themes" [value]="theme">{{theme}}</option>
           </select>
         </div>
-        <button class="btn btn-primary search-btn" (click)="startPlanning()">Plan My Trip ✈</button>
+        <div class="control-card">
+          <div class="metric-label">Trusted by</div>
+          <div class="metric-value">50,000+ travel planners</div>
+        </div>
       </div>
-      <!-- Budget Filter -->
-      <div class="budget-filter">
-        <span>Budget:</span>
-        <button *ngFor="let b of budgets" [class.active]="activeBudget===b.key"
-          (click)="activeBudget=b.key" class="budget-btn">
-          {{b.icon}} {{b.label}}
-        </button>
+      <div class="hero-pill-row">
+        <div class="pill">Smart itinerary planning</div>
+        <div class="pill">Instant booking actions</div>
+        <div class="pill">Event and community hubs</div>
+        <div class="pill">Secure account access</div>
       </div>
     </div>
   </section>
@@ -79,7 +68,6 @@ import { Destination } from '../../models';
     <div class="types-grid">
       <div class="type-card" *ngFor="let t of types" (click)="filterByType(t.key)"
         [style.background]="t.bg" [class.active]="activeType===t.key">
-        <span class="type-icon">{{t.icon}}</span>
         <span class="type-label">{{t.label}}</span>
       </div>
     </div>
@@ -105,7 +93,7 @@ import { Destination } from '../../models';
           <div class="dest-header">
             <div>
               <h3>{{d.name}}</h3>
-              <p class="dest-state">📍 {{d.state}}</p>
+              <p class="dest-state">{{d.state}}</p>
             </div>
             <div class="dest-rating">
               <span class="star">★</span> {{d.rating}}
@@ -139,7 +127,6 @@ import { Destination } from '../../models';
       <div class="steps-grid">
         <div class="step" *ngFor="let s of steps; let i=index">
           <div class="step-num">{{i+1}}</div>
-          <div class="step-icon">{{s.icon}}</div>
           <h3>{{s.title}}</h3>
           <p>{{s.desc}}</p>
         </div>
@@ -157,65 +144,80 @@ import { Destination } from '../../models';
   </section>
   `,
   styles: [`
-    .hero { position: relative; min-height: 85vh; display: flex; align-items: center; overflow: hidden; }
-    .hero-bg { position: absolute; inset: 0; background: linear-gradient(135deg,#1a1a2e 0%,#16213e 45%,#0f3460 100%); }
-    .hero-bg::after { content:''; position:absolute; inset:0; background: url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1600') center/cover; opacity:0.12; }
-    .hero-content { position: relative; z-index: 1; color: white; max-width: 900px; padding: 80px 24px; }
-    .hero-badge { display: inline-block; background: rgba(233,69,96,0.2); border: 1px solid rgba(233,69,96,0.4); padding: 6px 16px; border-radius: 50px; font-size: 14px; margin-bottom: 24px; }
-    .hero-content h1 { font-size: clamp(2.5rem, 5vw, 4rem); line-height: 1.15; margin-bottom: 16px; }
-    .accent { color: #f0a500; }
-    .hero-content p { font-size: 1.2rem; opacity: 0.85; margin-bottom: 40px; }
-    .search-box { background: white; border-radius: 20px; padding: 16px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
-    .search-field { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 160px; background: #f8f9ff; border-radius: 12px; padding: 10px 14px; }
-    .search-field input, .search-field select { border: none; background: transparent; font-size: 14px; outline: none; width: 100%; font-family: 'DM Sans',sans-serif; color: #2d2d44; }
-    .search-icon { font-size: 16px; flex-shrink: 0; }
-    .search-divider { font-size: 20px; color: #e94560; font-weight: 700; }
-    .search-btn { flex-shrink: 0; padding: 14px 28px; white-space: nowrap; }
-    .budget-filter { display: flex; align-items: center; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
-    .budget-filter span { color: rgba(255,255,255,0.7); font-size: 14px; }
-    .budget-btn { padding: 6px 16px; border-radius: 50px; border: 1px solid rgba(255,255,255,0.3); background: transparent; color: white; font-size: 13px; cursor: pointer; transition: all 0.2s; }
-    .budget-btn.active, .budget-btn:hover { background: #e94560; border-color: #e94560; }
-    .stats-bar { background: #1a1a2e; padding: 32px 0; }
+    .hero { position: relative; min-height: 92vh; display: flex; align-items: center; overflow: hidden; }
+    .hero-content { position: relative; z-index: 2; color: white; max-width: 1080px; padding: 80px 24px; display: grid; gap: 24px; }
+    .hero-headline { max-width: 720px; }
+    .eyebrow { display: inline-block; text-transform: uppercase; letter-spacing: 0.18em; font-size: 0.82rem; color: #a5b4fc; margin-bottom: 22px; }
+    .hero-headline h1 { font-size: clamp(2.7rem, 5vw, 4.4rem); line-height: 1.02; margin-bottom: 20px; letter-spacing: -0.03em; }
+    .hero-headline p { font-size: 1.05rem; max-width: 640px; color: rgba(255,255,255,0.88); line-height: 1.8; }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; margin-top: 4px; }
+    .btn-secondary { background: rgba(255,255,255,0.12); color: white; border: 1px solid rgba(255,255,255,0.18); }
+    .btn-secondary:hover { background: rgba(255,255,255,0.2); }
+    .btn-outline { background: transparent; color: white; border: 1px solid rgba(255,255,255,0.6); }
+    .btn-outline:hover { background: rgba(255,255,255,0.08); }
+    .hero-controls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; max-width: 720px; }
+    .control-card { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.14); border-radius: 18px; padding: 22px; }
+    .control-card label { display: block; font-size: 0.85rem; color: rgba(255,255,255,0.7); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.12em; }
+    .control-card select { width: 100%; padding: 12px 14px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.18); background: rgba(255,255,255,0.06); color: white; }
+    .metric-label { font-size: 0.82rem; color: rgba(255,255,255,0.72); margin-bottom: 10px; }
+    .metric-value { font-size: 1.25rem; color: white; font-weight: 700; }
+    .hero-pill-row { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 14px; }
+    .pill { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.12); border-radius: 999px; padding: 14px 18px; font-size: 0.92rem; color: #e0e7ff; text-align: center; }
+    .stats-bar { background: rgba(255,255,255,0.06); backdrop-filter: blur(18px); padding: 32px 0; }
     .stats-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 24px; text-align: center; }
-    .stat-num { font-size: 2rem; font-weight: 700; color: #f0a500; font-family: 'Playfair Display',serif; }
-    .stat-label { color: rgba(255,255,255,0.7); font-size: 14px; margin-top: 4px; }
+    .stat-num { font-size: 2.1rem; font-weight: 700; color: white; font-family: var(--font-display); }
+    .stat-label { color: rgba(255,255,255,0.7); font-size: 14px; margin-top: 6px; }
     .types-section { padding: 64px 0 32px; }
-    .types-grid { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
-    .type-card { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 20px 24px; border-radius: 16px; cursor: pointer; transition: all 0.2s; min-width: 100px; }
-    .type-icon { font-size: 28px; }
-    .type-label { font-size: 13px; font-weight: 600; color: #2d2d44; }
-    .type-card:hover, .type-card.active { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.12); }
+    .types-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; }
+    .type-card { padding: 24px; border-radius: 22px; transition: all 0.2s ease; text-align: center; min-height: 120px; display: flex; align-items: center; justify-content: center; }
+    .type-label { font-size: 0.95rem; font-weight: 700; color: #1f2937; }
+    .type-card:hover, .type-card.active { transform: translateY(-4px); box-shadow: 0 14px 42px rgba(15,23,42,0.12); }
     .destinations-section { padding: 32px 0 64px; }
     .destinations-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 28px; }
-    .dest-card { background: white; border-radius: 20px; overflow: hidden; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
-    .dest-card:hover { transform: translateY(-6px); box-shadow: 0 16px 48px rgba(0,0,0,0.14); }
+    .dest-card { background: white; border-radius: 20px; overflow: hidden; cursor: pointer; transition: all 0.3s; box-shadow: 0 8px 30px rgba(15,23,42,0.08); }
+    .dest-card:hover { transform: translateY(-6px); box-shadow: 0 20px 55px rgba(15,23,42,0.14); }
     .dest-img-wrap { position: relative; height: 220px; overflow: hidden; }
-    .dest-img-wrap img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s; }
-    .dest-card:hover .dest-img-wrap img { transform: scale(1.06); }
-    .dest-type-badge { position: absolute; top: 14px; left: 14px; background: rgba(26,26,46,0.75); color: white; padding: 4px 12px; border-radius: 50px; font-size: 12px; font-weight: 600; backdrop-filter: blur(4px); }
-    .dest-budget-info { position: absolute; bottom: 14px; right: 14px; background: rgba(240,165,0,0.9); color: #1a1a2e; padding: 4px 12px; border-radius: 50px; font-size: 12px; font-weight: 700; }
-    .dest-info { padding: 20px; }
-    .dest-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
-    .dest-header h3 { font-size: 1.25rem; color: #1a1a2e; margin-bottom: 2px; }
-    .dest-state { font-size: 13px; color: #6c7293; }
-    .dest-rating { text-align: right; font-weight: 700; font-size: 15px; color: #1a1a2e; }
-    .review-count { font-size: 12px; color: #6c7293; font-weight: 400; }
-    .dest-desc { color: #6c7293; font-size: 14px; margin-bottom: 12px; line-height: 1.5; }
-    .dest-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 14px; }
-    .budget-range { display: flex; gap: 6px; }
-    .btn-xs { padding: 6px 16px; font-size: 13px; }
-    .how-it-works { background: #1a1a2e; padding: 80px 0; }
+    .dest-img-wrap img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; }
+    .dest-card:hover .dest-img-wrap img { transform: scale(1.04); }
+    .dest-type-badge { position: absolute; top: 14px; left: 14px; background: rgba(15,23,42,0.82); color: white; padding: 6px 14px; border-radius: 999px; font-size: 12px; font-weight: 700; }
+    .dest-budget-info { position: absolute; bottom: 14px; right: 14px; background: rgba(249,115,22,0.9); color: white; padding: 5px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; }
+    .dest-info { padding: 22px; }
+    .dest-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; gap: 16px; }
+    .dest-header h3 { font-size: 1.25rem; color: #111827; margin-bottom: 4px; }
+    .dest-state { font-size: 13px; color: #6b7280; }
+    .dest-rating { text-align: right; font-weight: 700; font-size: 15px; color: #111827; }
+    .review-count { font-size: 12px; color: #6b7280; font-weight: 400; }
+    .dest-desc { color: #4b5563; font-size: 14px; margin-bottom: 12px; line-height: 1.7; }
+    .dest-footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 16px; flex-wrap: wrap; }
+    .budget-range { display: flex; gap: 8px; flex-wrap: wrap; }
+    .btn-xs { padding: 8px 16px; font-size: 13px; }
+    .how-it-works { background: #0f172a; padding: 80px 0; }
     .how-it-works .section-header h2, .how-it-works .section-header p { color: white !important; }
-    .steps-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 32px; }
-    .step { text-align: center; color: white; }
-    .step-num { width: 36px; height: 36px; border-radius: 50%; background: #e94560; color: white; font-weight: 700; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; }
-    .step-icon { font-size: 40px; margin-bottom: 12px; }
-    .step h3 { font-size: 1.05rem; margin-bottom: 8px; }
-    .step p { font-size: 14px; opacity: 0.75; }
-    .cta-section { background: linear-gradient(135deg,#e94560,#0f3460); padding: 80px 0; text-align: center; color: white; }
+    .steps-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 24px; }
+    .step { padding: 24px; background: rgba(255,255,255,0.05); border-radius: 24px; text-align: left; color: white; }
+    .step-num { width: 38px; height: 38px; border-radius: 50%; background: #2563eb; color: white; font-weight: 700; display: flex; align-items: center; justify-content: center; margin-bottom: 18px; }
+    .step h3 { font-size: 1rem; margin-bottom: 10px; }
+    .step p { font-size: 0.95rem; opacity: 0.86; line-height: 1.8; }
+    .cta-section { background: linear-gradient(135deg, #2563eb, #111827); padding: 80px 0; text-align: center; color: white; }
     .cta-section h2 { font-size: 2.5rem; margin-bottom: 12px; }
     .cta-section p { font-size: 1.1rem; opacity: 0.9; margin-bottom: 32px; }
-    @media(max-width:768px) { .stats-grid{grid-template-columns:repeat(2,1fr);} .steps-grid{grid-template-columns:1fr;} }
+    @media (max-width: 1024px) {
+      .hero { min-height: 88vh; }
+      .hero-controls { grid-template-columns: 1fr; }
+      .hero-pill-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .stats-grid { grid-template-columns: repeat(2,1fr); }
+      .steps-grid { grid-template-columns: repeat(2,1fr); }
+    }
+    @media (max-width: 768px) {
+      .hero { min-height: auto; padding-bottom: 40px; }
+      .hero-content { padding: 56px 18px 40px; }
+      .hero-headline h1 { font-size: 2.5rem; }
+      .hero-actions { flex-direction: column; align-items: stretch; }
+      .hero-pill-row { grid-template-columns: 1fr; }
+      .types-grid { grid-template-columns: 1fr; }
+      .destinations-grid { grid-template-columns: 1fr; }
+      .how-it-works .section-header { text-align: left; }
+    }
   `]
 })
 export class HomeComponent implements OnInit {
@@ -227,21 +229,23 @@ export class HomeComponent implements OnInit {
   today = new Date().toISOString().split('T')[0];
 
   cities = ['Bengaluru','Mumbai','Delhi','Chennai','Hyderabad','Pune','Kolkata','Ahmedabad'];
-  budgets = [{key:'LOW',icon:'💰',label:'Budget'},{key:'MID',icon:'💳',label:'Mid-Range'},{key:'LUXURY',icon:'💎',label:'Luxury'}];
+  selectedTheme = 'City';
+  themes = ['City', 'Beach', 'Mountain', 'Heritage'];
+  budgets = [{key:'LOW',label:'Budget'},{key:'MID',label:'Mid-Range'},{key:'LUXURY',label:'Luxury'}];
   types = [
-    {key:'BEACH',icon:'🏖',label:'Beach',bg:'#e3f2fd'},
-    {key:'MOUNTAIN',icon:'🏔',label:'Mountain',bg:'#e8f5e9'},
-    {key:'HERITAGE',icon:'🏛',label:'Heritage',bg:'#fff8e1'},
-    {key:'NATURE',icon:'🌿',label:'Nature',bg:'#f3e5f5'},
-    {key:'CITY',icon:'🏙',label:'City',bg:'#fce4ec'},
-    {key:'WILDLIFE',icon:'🐅',label:'Wildlife',bg:'#fff3e0'},
+    {key:'BEACH',label:'Beach',bg:'#e3f2fd'},
+    {key:'MOUNTAIN',label:'Mountain',bg:'#e8f5e9'},
+    {key:'HERITAGE',label:'Heritage',bg:'#fff8e1'},
+    {key:'NATURE',label:'Nature',bg:'#f3e5f5'},
+    {key:'CITY',label:'City',bg:'#fce4ec'},
+    {key:'WILDLIFE',label:'Wildlife',bg:'#fff3e0'},
   ];
-  stats = [{num:'500+',label:'Destinations'},{num:'50K+',label:'Happy Travellers'},{num:'1M+',label:'Trips Planned'},{num:'4.8★',label:'Avg Rating'}];
+  stats = [{num:'500+',label:'Destinations'},{num:'50K+',label:'Happy Travellers'},{num:'1M+',label:'Trips Planned'},{num:'4.8 / 5',label:'Average Rating'}];
   steps = [
-    {icon:'🗺',title:'Choose Destination',desc:'Pick from 500+ curated destinations across India'},
-    {icon:'📅',title:'Set Your Dates',desc:'Select travel dates and number of travellers'},
-    {icon:'💰',title:'Pick Budget',desc:'Choose Low, Mid or Luxury budget preferences'},
-    {icon:'✈',title:'Book & Travel',desc:'Book transport, hotel and pay securely'}
+    {title:'Choose Destination',desc:'Select from curated, highly rated travel experiences.'},
+    {title:'Set Your Dates',desc:'Pick your schedule and traveller count with ease.'},
+    {title:'Pick Budget',desc:'Filter for budget-friendly, premium, or luxury stays.'},
+    {title:'Book & Travel',desc:'Confirm transport, hotel, and services in a single flow.'}
   ];
 
   constructor(private destService: DestinationService, public auth: AuthService, private router: Router) {}

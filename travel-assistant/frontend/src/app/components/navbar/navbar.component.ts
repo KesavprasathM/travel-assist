@@ -10,13 +10,15 @@ import { AuthService } from '../../services/auth.service';
   template: `
   <nav class="navbar">
     <div class="nav-inner">
-      <a routerLink="/" class="nav-logo">✈ Tripx</a>
+      <a routerLink="/" class="nav-logo">Tripx</a>
       <div class="nav-links" [class.open]="menuOpen">
         <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}">Home</a>
         <a routerLink="/destinations" routerLinkActive="active">Explore</a>
+        <a routerLink="/events" routerLinkActive="active">Events</a>
+        <a routerLink="/actions" routerLinkActive="active">Actions</a>
+        <a routerLink="/feedback" routerLinkActive="active">Feedback</a>
+        <a routerLink="/community" routerLinkActive="active">Community</a>
         <a routerLink="/planner" routerLinkActive="active" *ngIf="auth.isLoggedIn">Plan Trip</a>
-        <a routerLink="/bookings" routerLinkActive="active" *ngIf="auth.isLoggedIn">My Bookings</a>
-        <a routerLink="/history" routerLinkActive="active" *ngIf="auth.isLoggedIn">History</a>
       </div>
       <div class="nav-actions">
         <ng-container *ngIf="auth.isLoggedIn; else guestLinks">
@@ -25,11 +27,11 @@ import { AuthService } from '../../services/auth.service';
             <span class="user-name">{{auth.currentUser?.name}}</span>
             <span>▾</span>
             <div class="dropdown" *ngIf="userMenuOpen">
-              <a routerLink="/profile">👤 Profile</a>
-              <a routerLink="/history">📋 Travel History</a>
-              <a routerLink="/reviews">⭐ My Reviews</a>
+              <a routerLink="/profile">Profile</a>
+              <a routerLink="/history">Travel History</a>
+              <a routerLink="/reviews">My Reviews</a>
               <hr>
-              <button (click)="logout()">🚪 Sign Out</button>
+              <button (click)="logout()">Sign Out</button>
             </div>
           </div>
         </ng-container>
@@ -43,7 +45,7 @@ import { AuthService } from '../../services/auth.service';
   </nav>
   `,
   styles: [`
-    .navbar { background: white; box-shadow: 0 2px 20px rgba(0,0,0,0.08); position: sticky; top: 0; z-index: 1000; }
+    .navbar { background: white; box-shadow: 0 2px 20px rgba(0,0,0,0.08); position: fixed; top: 0; left: 0; right: 0; width: 100%; z-index: 1000; }
     .nav-inner { max-width: 1200px; margin: 0 auto; padding: 0 24px; height: 68px; display: flex; align-items: center; gap: 32px; }
     .nav-logo { font-family: 'Playfair Display',serif; font-size: 1.5rem; font-weight: 700; color: #e94560; text-decoration: none; flex-shrink: 0; }
     .nav-links { display: flex; gap: 8px; flex: 1; }

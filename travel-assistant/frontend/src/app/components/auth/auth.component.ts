@@ -9,110 +9,271 @@ import { AuthService } from '../../services/auth.service';
   standalone: true,
   imports: [CommonModule, FormsModule, RouterLink],
   template: `
-  <div class="auth-page">
-    <div class="auth-visual">
-      <div class="auth-visual-content">
-        <h1>Tripx</h1>
-        <p>Your intelligent travel companion for exploring India and beyond</p>
-        <div class="destinations-preview">
-          <div class="dest-chip" *ngFor="let d of ['Goa','Manali','Jaipur','Kerala','Agra']">✈ {{d}}</div>
-        </div>
+  <div class="auth-shell">
+    <div class="container" [class.active]="mode==='register'">
+      <div class="form-container sign-up">
+        <form (ngSubmit)="register()" #regForm="ngForm">
+          <h1>Create Account</h1>
+          <div class="social-icons">
+            <a href="#" class="icon"><i class="fa-brands fa-google"></i></a>
+            <a href="#" class="icon"><i class="fa-brands fa-facebook-f"></i></a>
+            <a href="#" class="icon"><i class="fa-brands fa-microsoft"></i></a>
+            <a href="#" class="icon"><i class="fa-brands fa-github"></i></a>
+          </div>
+          <span>or use your email for registration</span>
+          <input type="text" placeholder="Name" [(ngModel)]="registerData.name" name="name" required>
+          <input type="email" placeholder="Email" [(ngModel)]="registerData.email" name="email" required>
+          <input type="password" placeholder="Password" [(ngModel)]="registerData.password" name="password" required minlength="6">
+          <button type="submit" class="btn btn-primary btn-full" [disabled]="loading">{{ loading ? 'Creating...' : 'Sign Up' }}</button>
+          <div *ngIf="mode==='register' && error" class="alert alert-error">{{ error }}</div>
+        </form>
       </div>
-    </div>
-    <div class="auth-form-wrap">
-      <div class="auth-form-card">
-        <div class="auth-logo">✈ Tripx</div>
-        <div class="auth-tabs">
-          <button [class.active]="mode==='login'" (click)="mode='login'">Sign In</button>
-          <button [class.active]="mode==='register'" (click)="mode='register'">Register</button>
+      <div class="form-container sign-in">
+        <form (ngSubmit)="login()" #loginForm="ngForm">
+          <h1>Sign In</h1>
+          <div class="social-icons">
+            <a href="#" class="icon"><i class="fa-brands fa-google"></i></a>
+            <a href="#" class="icon"><i class="fa-brands fa-facebook-f"></i></a>
+            <a href="#" class="icon"><i class="fa-brands fa-microsoft"></i></a>
+            <a href="#" class="icon"><i class="fa-brands fa-github"></i></a>
+          </div>
+          <span>or use your email password</span>
+          <input type="email" placeholder="Email" [(ngModel)]="loginData.email" name="email" required>
+          <input type="password" placeholder="Password" [(ngModel)]="loginData.password" name="password" required>
+          <a routerLink="/auth/resend-validation" class="text-link">Forgot Your Password?</a>
+          <button type="submit" class="btn btn-primary btn-full" [disabled]="loading">{{ loading ? 'Signing In...' : 'Sign In' }}</button>
+          <div *ngIf="mode==='login' && error" class="alert alert-error">{{ error }}</div>
+        </form>
+      </div>
+      <div class="toggle-container">
+        <div class="toggle">
+          <div class="toggle-panel toggle-left">
+            <h1>Welcome Back!</h1>
+            <p>Enter your personal details to use all of site features</p>
+            <button type="button" class="btn hidden" id="login" (click)="setMode('login')">Sign In</button>
+          </div>
+          <div class="toggle-panel toggle-right">
+            <h1>Hello, Friend!</h1>
+            <p>Register with your personal details to use all of site features</p>
+            <button type="button" class="btn hidden" id="register" (click)="setMode('register')">Sign Up</button>
+          </div>
         </div>
-        <div *ngIf="error" class="alert alert-error">{{error}}</div>
-        <div *ngIf="success" class="alert alert-success">{{success}}</div>
-
-        <!-- Login Form -->
-        <form *ngIf="mode==='login'" (ngSubmit)="login()" #loginForm="ngForm">
-          <div class="form-group">
-            <label>Email Address</label>
-            <input type="email" [(ngModel)]="loginData.email" name="email" placeholder="you@example.com" required>
-          </div>
-          <div class="form-group">
-            <label>Password</label>
-            <div class="password-wrap">
-              <input [type]="showPassword?'text':'password'" [(ngModel)]="loginData.password" name="password" placeholder="••••••••" required>
-              <button type="button" class="eye-btn" (click)="showPassword=!showPassword">{{showPassword?'🙈':'👁'}}</button>
-            </div>
-          </div>
-          <button type="submit" class="btn btn-primary btn-full" [disabled]="loading">
-            {{loading ? 'Signing in...' : 'Sign In'}}
-          </button>
-          <p class="demo-hint">Demo: test&#64;travel.com / password123</p>
-        </form>
-
-        <!-- Register Form -->
-        <form *ngIf="mode==='register'" (ngSubmit)="register()" #regForm="ngForm">
-          <div class="form-group">
-            <label>Full Name</label>
-            <input type="text" [(ngModel)]="registerData.name" name="name" placeholder="Raj Sharma" required>
-          </div>
-          <div class="form-group">
-            <label>Email Address</label>
-            <input type="email" [(ngModel)]="registerData.email" name="email" placeholder="raj@example.com" required>
-          </div>
-          <div class="form-group">
-            <label>Password</label>
-            <input type="password" [(ngModel)]="registerData.password" name="password" placeholder="Min. 6 characters" required minlength="6">
-          </div>
-          <div class="grid-2">
-            <div class="form-group">
-              <label>Phone</label>
-              <input type="tel" [(ngModel)]="registerData.phone" name="phone" placeholder="+91 9876543210">
-            </div>
-            <div class="form-group">
-              <label>Your City</label>
-              <input type="text" [(ngModel)]="registerData.city" name="city" placeholder="Bengaluru">
-            </div>
-          </div>
-          <button type="submit" class="btn btn-primary btn-full" [disabled]="loading">
-            {{loading ? 'Creating...' : 'Create Account'}}
-          </button>
-        </form>
-
-        <p class="auth-footer">By continuing, you agree to our <a href="#">Terms</a> & <a href="#">Privacy Policy</a></p>
       </div>
     </div>
   </div>
   `,
   styles: [`
-    .auth-page { display: flex; min-height: 100vh; }
-    .auth-visual {
-      flex: 1; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-      display: flex; align-items: center; justify-content: center;
-      padding: 48px; position: relative; overflow: hidden;
+    .auth-shell {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(to right, #e2e2e2, #c9d6ff);
+      padding: 24px;
+      font-family: 'Avenir', 'Helvetica Neue', Arial, sans-serif;
+      font-style: oblique;
+      font-weight: 500;
     }
-    .auth-visual::before {
-      content: ''; position: absolute; inset: 0;
-      background: url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200') center/cover;
-      opacity: 0.15;
+    .auth-shell * {
+      font-family: inherit;
+      font-style: inherit;
+      font-weight: inherit;
     }
-    .auth-visual-content { position: relative; color: white; text-align: center; }
-    .auth-visual-content h1 { font-family: 'Playfair Display', serif; font-size: 3.5rem; margin-bottom: 16px; }
-    .auth-visual-content p { font-size: 1.1rem; opacity: 0.85; margin-bottom: 40px; max-width: 360px; }
-    .destinations-preview { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
-    .dest-chip { background: rgba(255,255,255,0.15); padding: 8px 18px; border-radius: 50px; font-size: 14px; backdrop-filter: blur(4px); }
-    .auth-form-wrap { width: 480px; display: flex; align-items: center; justify-content: center; padding: 40px; background: white; }
-    .auth-form-card { width: 100%; }
-    .auth-logo { font-size: 1.8rem; font-weight: 700; color: #e94560; margin-bottom: 32px; font-family: 'Playfair Display', serif; }
-    .auth-tabs { display: flex; background: #f8f9ff; border-radius: 12px; padding: 4px; margin-bottom: 28px; }
-    .auth-tabs button { flex: 1; padding: 10px; border: none; background: transparent; border-radius: 10px; font-weight: 600; cursor: pointer; transition: all 0.2s; color: #6c7293; }
-    .auth-tabs button.active { background: white; color: #e94560; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-    .btn-full { width: 100%; justify-content: center; margin-top: 8px; }
-    .password-wrap { position: relative; }
-    .password-wrap input { padding-right: 48px; }
-    .eye-btn { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 16px; }
-    .demo-hint { text-align: center; margin-top: 12px; font-size: 13px; color: #6c7293; background: #f8f9ff; padding: 8px; border-radius: 8px; }
-    .auth-footer { text-align: center; margin-top: 20px; font-size: 13px; color: #6c7293; }
-    .auth-footer a { color: #e94560; text-decoration: none; }
-    @media(max-width:768px) { .auth-visual{display:none;} .auth-form-wrap{width:100%;} }
+    .text-link {
+      margin-top: 12px;
+      color: #512da8;
+      text-decoration: none;
+      font-size: 13px;
+    }
+    .text-link:hover { text-decoration: underline; }
+    .container {
+      background-color: #fff;
+      border-radius: 30px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.35);
+      position: relative;
+      overflow: hidden;
+      width: 768px;
+      max-width: 100%;
+      min-height: 520px;
+    }
+    .container p {
+      font-size: 14px;
+      line-height: 20px;
+      letter-spacing: 0.3px;
+      margin: 20px 0;
+    }
+    .container span {
+      font-size: 12px;
+      color: #666;
+      margin-bottom: 18px;
+      display: inline-block;
+    }
+    .container a {
+      color: #333;
+      font-size: 13px;
+      text-decoration: none;
+      margin: 15px 0 10px;
+      display: inline-block;
+    }
+    .container button {
+      background-color: #512da8;
+      color: #fff;
+      font-size: 12px;
+      padding: 10px 45px;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-top: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .container button:hover { transform: translateY(-1px); }
+    .container button.hidden {
+      background-color: transparent;
+      border-color: #fff;
+    }
+    .container form {
+      background-color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      padding: 0 40px;
+      height: 100%;
+      text-align: center;
+    }
+    .container input {
+      background-color: rgba(238, 238, 238, 0.96);
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      margin: 8px 0;
+      padding: 10px 15px;
+      font-size: 13px;
+      border-radius: 8px;
+      width: 100%;
+      outline: none;
+      color: #111827;
+    }
+    .container input:focus {
+      border-color: rgba(59, 130, 246, 0.9);
+      background-color: white;
+    }
+    .form-container {
+      position: absolute;
+      top: 0;
+      height: 100%;
+      transition: all 0.6s ease-in-out;
+    }
+    .sign-in {
+      left: 0;
+      width: 50%;
+      z-index: 2;
+    }
+    .container.active .sign-in {
+      transform: translateX(100%);
+    }
+    .sign-up {
+      left: 0;
+      width: 50%;
+      opacity: 0;
+      z-index: 1;
+      transition: all 0.5s;
+    }
+    .container.active .sign-up {
+      transform: translateX(100%);
+      opacity: 1;
+      z-index: 5;
+      animation: move 0.6s;
+    }
+    @keyframes move {
+      0%, 49.99% { opacity: 0; z-index: 1; }
+      50%, 100% { opacity: 1; z-index: 5; }
+    }
+    .social-icons {
+      margin: 20px 0;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .social-icons a {
+      border: 1px solid #ccc;
+      border-radius: 20%;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0 3px;
+      width: 40px;
+      height: 40px;
+      transition: all 0.3s ease;
+      color: #512da8;
+    }
+    .social-icons a:hover {
+      transform: scale(1.1);
+      border-color: #512da8;
+      color: #2a0d61;
+    }
+    .toggle-container {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      width: 50%;
+      height: 100%;
+      overflow: hidden;
+      transition: all 0.6s ease-in-out;
+      border-radius: 150px 0 0 100px;
+      z-index: 1000;
+    }
+    .container.active .toggle-container {
+      transform: translateX(-100%);
+      border-radius: 0 150px 100px 0;
+    }
+    .toggle {
+      background: linear-gradient(to right, #5c6bc0, #512da8);
+      color: #fff;
+      position: relative;
+      left: -100%;
+      height: 100%;
+      width: 200%;
+      transform: translateX(0);
+      transition: all 0.6s ease-in-out;
+    }
+    .container.active .toggle {
+      transform: translateX(50%);
+    }
+    .toggle-panel {
+      position: absolute;
+      width: 50%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      padding: 0 30px;
+      text-align: center;
+      top: 0;
+      transform: translateX(0);
+      transition: all 0.6s ease-in-out;
+    }
+    .toggle-left { transform: translateX(-200%); }
+    .container.active .toggle-left { transform: translateX(0); }
+    .toggle-right { right: 0; transform: translateX(0); }
+    .container.active .toggle-right { transform: translateX(200%); }
+    .toggle-panel h1 { font-size: 2rem; margin-bottom: 12px; }
+    .toggle-panel p { font-size: 0.95rem; line-height: 1.6; max-width: 280px; margin-bottom: 20px; }
+    @media (max-width: 768px) {
+      .toggle-container { display: none; }
+      .container { width: 100%; min-height: auto; border-radius: 24px; }
+      .form-container { position: relative; width: 100%; left: 0; transform: none !important; opacity: 1 !important; }
+      .sign-in { width: 100%; z-index: 2; }
+      .sign-up { width: 100%; opacity: 1; z-index: 1; }
+      .container .sign-up { display: none; }
+      .container.active .sign-up { display: block; }
+      .container.active .sign-in { display: none; }
+      .container form { padding: 0 24px; }
+      .container button { width: 100%; }
+    }
   `]
 })
 export class AuthComponent implements OnInit {
@@ -124,8 +285,15 @@ export class AuthComponent implements OnInit {
   constructor(private authService: AuthService, private router: Router, private route: ActivatedRoute) {}
 
   ngOnInit() {
-    this.route.params.subscribe(p => { if (p['mode']) this.mode = p['mode']; });
+    this.route.params.subscribe(p => {
+      this.mode = p['mode'] === 'register' ? 'register' : 'login';
+    });
     if (this.authService.isLoggedIn) this.router.navigate(['/']);
+  }
+
+  setMode(mode: 'login' | 'register') {
+    this.mode = mode;
+    this.router.navigate(['/auth', mode], { replaceUrl: true });
   }
 
   login() {
