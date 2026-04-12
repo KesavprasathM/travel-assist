@@ -1,0 +1,6 @@
+{
+  "devDependencies": {
+    "@angular-devkit/build-angular": "^21.2.7",
+    "@angular/cli": "^17.3.17"
+  }
+}

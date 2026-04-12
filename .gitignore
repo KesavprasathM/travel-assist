@@ -1,0 +1,51 @@
+# Dependencies
+node_modules/
+package-lock.json
+npm-debug.log
+yarn-error.log
+
+# Build directories
+dist/
+build/
+target/
+*.jar
+*.war
+
+# Angular
+.angular/
+angular/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Environment
+.env
+.env.local
+.env.*
+
+# Logs
+logs/
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Maven
+.m2/
+
+# Misc
+*.orig
+.classpath
+.project
+.settings
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
