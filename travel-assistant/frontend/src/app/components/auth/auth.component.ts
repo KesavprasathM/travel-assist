@@ -25,6 +25,7 @@ import { AuthService } from '../../services/auth.service';
           <input type="email" placeholder="Email" [(ngModel)]="registerData.email" name="email" required>
           <input type="password" placeholder="Password" [(ngModel)]="registerData.password" name="password" required minlength="6">
           <button type="submit" class="btn btn-primary btn-full" [disabled]="loading">{{ loading ? 'Creating...' : 'Sign Up' }}</button>
+          <div *ngIf="mode==='register' && success" class="alert alert-success">{{ success }}</div>
           <div *ngIf="mode==='register' && error" class="alert alert-error">{{ error }}</div>
         </form>
       </div>
@@ -297,7 +298,7 @@ export class AuthComponent implements OnInit {
   }
 
   login() {
-    this.loading = true; this.error = '';
+    this.loading = true; this.error = ''; this.success = '';
     this.authService.login(this.loginData.email, this.loginData.password).subscribe({
       next: () => this.router.navigate(['/']),
       error: e => { this.error = e.error?.message || 'Login failed'; this.loading = false; }
@@ -305,9 +306,13 @@ export class AuthComponent implements OnInit {
   }
 
   register() {
-    this.loading = true; this.error = '';
+    this.loading = true; this.error = ''; this.success = '';
     this.authService.register(this.registerData).subscribe({
-      next: () => this.router.navigate(['/']),
+      next: () => {
+        this.success = 'Successful sign up! Redirecting to sign in...';
+        this.loading = false;
+        setTimeout(() => this.setMode('login'), 1400);
+      },
       error: e => { this.error = e.error?.message || 'Registration failed'; this.loading = false; }
     });
   }

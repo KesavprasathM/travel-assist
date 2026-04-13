@@ -13,12 +13,11 @@ import { AuthService } from '../../services/auth.service';
       <a routerLink="/" class="nav-logo">Tripx</a>
       <div class="nav-links" [class.open]="menuOpen">
         <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}">Home</a>
+        <a routerLink="/planner" routerLinkActive="active">Plan Trip</a>
         <a routerLink="/destinations" routerLinkActive="active">Explore</a>
-        <a routerLink="/events" routerLinkActive="active">Events</a>
         <a routerLink="/actions" routerLinkActive="active">Actions</a>
         <a routerLink="/feedback" routerLinkActive="active">Feedback</a>
         <a routerLink="/community" routerLinkActive="active">Community</a>
-        <a routerLink="/planner" routerLinkActive="active" *ngIf="auth.isLoggedIn">Plan Trip</a>
       </div>
       <div class="nav-actions">
         <ng-container *ngIf="auth.isLoggedIn; else guestLinks">

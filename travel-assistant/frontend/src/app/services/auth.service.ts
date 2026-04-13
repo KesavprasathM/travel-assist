@@ -41,6 +41,14 @@ export class AuthService {
     this.currentUserSubject.next(null);
   }
 
+  updateProfile(data: Partial<User>) {
+    const current = this.currentUser;
+    if (!current) return;
+    const updated: User = { ...current, ...data };
+    localStorage.setItem('user', JSON.stringify(updated));
+    this.currentUserSubject.next(updated);
+  }
+
   get currentUser(): User | null { return this.currentUserSubject.value; }
   get isLoggedIn(): boolean { return !!localStorage.getItem('token'); }
 }

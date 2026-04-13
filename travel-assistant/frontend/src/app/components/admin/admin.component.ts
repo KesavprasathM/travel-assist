@@ -13,7 +13,10 @@ import { AuthService } from '../../services/auth.service';
   <!-- Admin Login Gate -->
   <div class="admin-login" *ngIf="!isAdmin">
     <div class="al-card">
-      <div class="al-logo">🛡 Tripx Admin</div>
+      <div class="al-logo">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Tripx Admin
+      </div>
       <h2>Admin Login</h2>
       <p>Restricted access — Admin credentials only</p>
       <div class="alert alert-error" *ngIf="loginError">{{loginError}}</div>
@@ -24,7 +27,8 @@ import { AuthService } from '../../services/auth.service';
         <input type="password" [(ngModel)]="loginForm.password" placeholder="••••••••">
       </div>
       <button class="btn btn-primary btn-full" (click)="adminLogin()" [disabled]="logging">
-        {{logging ? 'Verifying...' : '🔐 Admin Login'}}
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px;vertical-align:middle"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        {{logging ? 'Verifying...' : 'Admin Login'}}
       </button>
     </div>
   </div>
@@ -34,14 +38,18 @@ import { AuthService } from '../../services/auth.service';
     <!-- Sidebar -->
     <aside class="admin-sidebar" [class.collapsed]="sidebarCollapsed">
       <div class="sidebar-logo" (click)="sidebarCollapsed=!sidebarCollapsed">
-        <span>🛡</span><span class="logo-text">Tripx Admin</span>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <span class="logo-text">Tripx Admin</span>
       </div>
       <nav class="sidebar-nav">
         <a *ngFor="let m of menu" (click)="activeSection=m.key" [class.active]="activeSection===m.key">
-          <span class="nav-icon">{{m.icon}}</span><span class="nav-label">{{m.label}}</span>
+          <span class="nav-icon" [innerHTML]="m.icon"></span><span class="nav-label">{{m.label}}</span>
         </a>
       </nav>
-      <button class="sidebar-logout" (click)="logout()">🚪 <span class="nav-label">Logout</span></button>
+      <button class="sidebar-logout" (click)="logout()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        <span class="nav-label">Logout</span>
+      </button>
     </aside>
 
     <!-- Main content -->
@@ -61,37 +69,49 @@ import { AuthService } from '../../services/auth.service';
           <!-- KPI Cards -->
           <div class="kpi-grid">
             <div class="kpi-card blue">
-              <div class="kpi-icon">👥</div>
+              <div class="kpi-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              </div>
               <div class="kpi-value">{{stats.totalUsers | number}}</div>
               <div class="kpi-label">Total Users</div>
               <div class="kpi-sub">{{stats.activeUsers}} active</div>
             </div>
             <div class="kpi-card green">
-              <div class="kpi-icon">🎟</div>
+              <div class="kpi-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v2z"/><path d="M13 5v2"/><path d="M13 17v2"/><path d="M13 11v2"/></svg>
+              </div>
               <div class="kpi-value">{{stats.totalBookings | number}}</div>
               <div class="kpi-label">Total Bookings</div>
               <div class="kpi-sub">{{stats.confirmedBookings}} confirmed</div>
             </div>
             <div class="kpi-card gold">
-              <div class="kpi-icon">💰</div>
-              <div class="kpi-value">₹{{stats.totalRevenue | number:'1.0-0'}}</div>
+              <div class="kpi-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              </div>
+              <div class="kpi-value">&#8377;{{stats.totalRevenue | number:'1.0-0'}}</div>
               <div class="kpi-label">Total Revenue</div>
-              <div class="kpi-sub">Avg ₹{{stats.avgBookingValue | number:'1.0-0'}}/booking</div>
+              <div class="kpi-sub">Avg &#8377;{{stats.avgBookingValue | number:'1.0-0'}}/booking</div>
             </div>
             <div class="kpi-card red">
-              <div class="kpi-icon">✈</div>
+              <div class="kpi-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.56 3.35 2 2 0 0 1 3.53 1h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 6.18 6.18l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+              </div>
               <div class="kpi-value">{{stats.totalTrips | number}}</div>
               <div class="kpi-label">Trip Plans</div>
               <div class="kpi-sub">Top: {{stats.topDestination}}</div>
             </div>
             <div class="kpi-card purple">
-              <div class="kpi-icon">📅</div>
+              <div class="kpi-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              </div>
               <div class="kpi-value">{{stats.todayBookings}}</div>
               <div class="kpi-label">Today's Bookings</div>
-              <div class="kpi-sub">₹{{stats.todayRevenue | number:'1.0-0'}} today</div>
+              <div class="kpi-sub">&#8377;{{stats.todayRevenue | number:'1.0-0'}} today</div>
             </div>
             <div class="kpi-card teal">
-              <div class="kpi-icon">⭐</div>
+              <div class="kpi-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              </div>
               <div class="kpi-value">{{stats.totalReviews}}</div>
               <div class="kpi-label">Reviews</div>
               <div class="kpi-sub">Top transport: {{stats.topTransportMode}}</div>
@@ -100,14 +120,17 @@ import { AuthService } from '../../services/auth.service';
 
           <!-- Revenue Chart -->
           <div class="chart-card" *ngIf="revenueByDest.length">
-            <h3>💰 Revenue by Destination</h3>
+            <h3>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px;vertical-align:middle"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              Revenue by Destination
+            </h3>
             <div class="bar-chart">
               <div class="bar-row" *ngFor="let r of revenueByDest">
                 <div class="bar-label">{{r.destination}}</div>
                 <div class="bar-track">
                   <div class="bar-fill" [style.width]="getBarWidth(r.revenue)+'%'"></div>
                 </div>
-                <div class="bar-value">₹{{r.revenue | number:'1.0-0'}}</div>
+                <div class="bar-value">&#8377;{{r.revenue | number:'1.0-0'}}</div>
               </div>
             </div>
           </div>
@@ -115,11 +138,17 @@ import { AuthService } from '../../services/auth.service';
           <!-- Alert Row -->
           <div class="alert-row">
             <div class="alert-stat warn">
-              <span>⏳ Pending Payments</span>
+              <span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px;vertical-align:middle"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                Pending Payments
+              </span>
               <strong>{{stats.pendingPayments}}</strong>
             </div>
             <div class="alert-stat danger">
-              <span>❌ Cancelled Bookings</span>
+              <span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px;vertical-align:middle"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                Cancelled Bookings
+              </span>
               <strong>{{stats.cancelledBookings}}</strong>
             </div>
           </div>
@@ -150,18 +179,22 @@ import { AuthService } from '../../services/auth.service';
                 <td>{{u.phone || '—'}}</td>
                 <td><span class="role-badge" [class.admin]="u.role==='ADMIN'">{{u.role}}</span></td>
                 <td>{{u.createdAt | date:'dd MMM y'}}</td>
-                <td><span class="status-dot" [class.active]="u.enabled" [class.inactive]="!u.enabled">{{u.enabled ? '● Active' : '● Blocked'}}</span></td>
+                <td><span class="status-dot" [class.active]="u.enabled" [class.inactive]="!u.enabled">{{u.enabled ? 'Active' : 'Blocked'}}</span></td>
                 <td>
-                  <button class="btn-action" (click)="viewUser(u.id)">👁 View</button>
-                  <button class="btn-action warn" (click)="toggleUser(u.id)" *ngIf="u.role!=='ADMIN'">{{u.enabled ? '🚫 Block' : '✅ Unblock'}}</button>
+                  <button class="btn-action" (click)="viewUser(u.id)">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px;vertical-align:middle"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>View
+                  </button>
+                  <button class="btn-action warn" (click)="toggleUser(u.id)" *ngIf="u.role!=='ADMIN'">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px;vertical-align:middle"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>{{u.enabled ? 'Block' : 'Unblock'}}
+                  </button>
                 </td>
               </tr>
             </tbody>
           </table>
           <div class="pagination">
-            <button (click)="userPage=userPage-1;loadUsers()" [disabled]="userPage===0">← Prev</button>
+            <button (click)="userPage=userPage-1;loadUsers()" [disabled]="userPage===0">&larr; Prev</button>
             <span>Page {{userPage+1}}</span>
-            <button (click)="userPage=userPage+1;loadUsers()">Next →</button>
+            <button (click)="userPage=userPage+1;loadUsers()">Next &rarr;</button>
           </div>
         </div>
 
@@ -169,8 +202,11 @@ import { AuthService } from '../../services/auth.service';
         <div class="modal-overlay" *ngIf="selectedUser" (click)="selectedUser=null">
           <div class="modal-lg" (click)="$event.stopPropagation()">
             <div class="modal-header">
-              <h2>👤 {{selectedUser.user?.name}}</h2>
-              <button (click)="selectedUser=null" class="close-btn">✕</button>
+              <h2>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px;vertical-align:middle"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                {{selectedUser.user?.name}}
+              </h2>
+              <button (click)="selectedUser=null" class="close-btn">&times;</button>
             </div>
             <div class="user-detail-grid">
               <div class="ud-info">
@@ -178,24 +214,24 @@ import { AuthService } from '../../services/auth.service';
                 <div class="ud-row"><span>Phone</span><strong>{{selectedUser.user?.phone || '—'}}</strong></div>
                 <div class="ud-row"><span>City</span><strong>{{selectedUser.user?.city || '—'}}</strong></div>
                 <div class="ud-row"><span>Joined</span><strong>{{selectedUser.user?.joinedAt | date:'dd MMM yyyy'}}</strong></div>
-                <div class="ud-row highlight"><span>Total Spent</span><strong>₹{{selectedUser.summary?.totalSpent | number:'1.0-0'}}</strong></div>
+                <div class="ud-row highlight"><span>Total Spent</span><strong>&#8377;{{selectedUser.summary?.totalSpent | number:'1.0-0'}}</strong></div>
                 <div class="ud-row"><span>Total Bookings</span><strong>{{selectedUser.summary?.totalBookings}}</strong></div>
                 <div class="ud-row"><span>Total Trips</span><strong>{{selectedUser.summary?.totalTrips}}</strong></div>
               </div>
               <div class="ud-history">
                 <h4>Recent Bookings</h4>
                 <div class="history-item" *ngFor="let b of selectedUser.bookings | slice:0:5">
-                  <span class="hi-route">{{b.fromLocation}} → {{b.toLocation}}</span>
+                  <span class="hi-route">{{b.fromLocation}} &rarr; {{b.toLocation}}</span>
                   <span class="hi-type">{{b.bookingType}}</span>
-                  <span class="hi-amount">₹{{b.totalAmount | number}}</span>
+                  <span class="hi-amount">&#8377;{{b.totalAmount | number}}</span>
                   <span class="hi-status" [class]="'hs-'+b.status?.toLowerCase()">{{b.status}}</span>
                 </div>
                 <div *ngIf="!selectedUser.bookings?.length" class="no-data">No bookings yet</div>
                 <h4 style="margin-top:16px">Recent Trips</h4>
                 <div class="history-item" *ngFor="let t of selectedUser.trips | slice:0:5">
-                  <span class="hi-route">{{t.source}} → {{t.destination}}</span>
+                  <span class="hi-route">{{t.source}} &rarr; {{t.destination}}</span>
                   <span class="hi-type">{{t.budgetType}}</span>
-                  <span class="hi-amount">₹{{t.totalBudget | number}}</span>
+                  <span class="hi-amount">&#8377;{{t.totalBudget | number}}</span>
                   <span class="hi-status">{{t.status}}</span>
                 </div>
               </div>
@@ -236,11 +272,11 @@ import { AuthService } from '../../services/auth.service';
               <tr *ngFor="let b of bookings">
                 <td><code>{{b.bookingReference}}</code></td>
                 <td>{{b.user?.name || '—'}}</td>
-                <td><span class="type-chip">{{getIcon(b.bookingType)}} {{b.bookingType}}</span></td>
-                <td>{{b.fromLocation}} → {{b.toLocation}}</td>
+                <td><span class="type-chip" [innerHTML]="getIcon(b.bookingType)+' '+b.bookingType"></span></td>
+                <td>{{b.fromLocation}} &rarr; {{b.toLocation}}</td>
                 <td>{{b.travelDate | date:'dd MMM y'}}</td>
                 <td>{{b.passengers}}</td>
-                <td><strong>₹{{b.totalAmount | number}}</strong></td>
+                <td><strong>&#8377;{{b.totalAmount | number}}</strong></td>
                 <td><span class="badge" [class]="'badge-'+b.paymentStatus?.toLowerCase()">{{b.paymentStatus}}</span></td>
                 <td><span class="badge" [class]="'badge-'+b.status?.toLowerCase()">{{b.status}}</span></td>
                 <td>{{b.bookedAt | date:'dd MMM y, HH:mm'}}</td>
@@ -248,9 +284,9 @@ import { AuthService } from '../../services/auth.service';
             </tbody>
           </table>
           <div class="pagination">
-            <button (click)="bookingPage=bookingPage-1;loadBookings()" [disabled]="bookingPage===0">← Prev</button>
+            <button (click)="bookingPage=bookingPage-1;loadBookings()" [disabled]="bookingPage===0">&larr; Prev</button>
             <span>Page {{bookingPage+1}}</span>
-            <button (click)="bookingPage=bookingPage+1;loadBookings()">Next →</button>
+            <button (click)="bookingPage=bookingPage+1;loadBookings()">Next &rarr;</button>
           </div>
         </div>
       </div>
@@ -280,7 +316,7 @@ import { AuthService } from '../../services/auth.service';
               <tr *ngFor="let p of payments">
                 <td><code>{{p.transactionId}}</code></td>
                 <td>{{p.user?.name || '—'}}</td>
-                <td><strong>₹{{p.amount | number}}</strong></td>
+                <td><strong>&#8377;{{p.amount | number}}</strong></td>
                 <td>{{p.paymentMethod}}</td>
                 <td>{{p.cardLast4 ? '****'+p.cardLast4 : p.upiId || '—'}}</td>
                 <td><span class="badge" [class]="'badge-'+p.status?.toLowerCase()">{{p.status}}</span></td>
@@ -289,9 +325,9 @@ import { AuthService } from '../../services/auth.service';
             </tbody>
           </table>
           <div class="pagination">
-            <button (click)="paymentPage=paymentPage-1;loadPayments()" [disabled]="paymentPage===0">← Prev</button>
+            <button (click)="paymentPage=paymentPage-1;loadPayments()" [disabled]="paymentPage===0">&larr; Prev</button>
             <span>Page {{paymentPage+1}}</span>
-            <button (click)="paymentPage=paymentPage+1;loadPayments()">Next →</button>
+            <button (click)="paymentPage=paymentPage+1;loadPayments()">Next &rarr;</button>
           </div>
         </div>
       </div>
@@ -315,20 +351,20 @@ import { AuthService } from '../../services/auth.service';
               <tr *ngFor="let t of trips">
                 <td>#{{t.id}}</td>
                 <td>{{t.user?.name || '—'}}</td>
-                <td><strong>{{t.source}} → {{t.destination}}</strong></td>
+                <td><strong>{{t.source}} &rarr; {{t.destination}}</strong></td>
                 <td>{{t.startDate | date:'dd MMM'}} – {{t.endDate | date:'dd MMM y'}}</td>
                 <td>{{t.numberOfPeople}}</td>
                 <td><span class="badge" [class]="'badge-'+t.budgetType?.toLowerCase()">{{t.budgetType}}</span></td>
                 <td>{{t.transportMode}}</td>
-                <td><strong>₹{{t.totalBudget | number}}</strong></td>
+                <td><strong>&#8377;{{t.totalBudget | number}}</strong></td>
                 <td><span class="badge badge-confirmed">{{t.status}}</span></td>
               </tr>
             </tbody>
           </table>
           <div class="pagination">
-            <button (click)="tripPage=tripPage-1;loadTrips()" [disabled]="tripPage===0">← Prev</button>
+            <button (click)="tripPage=tripPage-1;loadTrips()" [disabled]="tripPage===0">&larr; Prev</button>
             <span>Page {{tripPage+1}}</span>
-            <button (click)="tripPage=tripPage+1;loadTrips()">Next →</button>
+            <button (click)="tripPage=tripPage+1;loadTrips()">Next &rarr;</button>
           </div>
         </div>
       </div>
@@ -336,7 +372,10 @@ import { AuthService } from '../../services/auth.service';
       <!-- Destinations Management -->
       <div *ngIf="activeSection==='destinations'" class="section-content">
         <div class="section-toolbar">
-          <button class="btn btn-primary" (click)="showAddDest=!showAddDest">+ Add Destination</button>
+          <button class="btn btn-primary" (click)="showAddDest=!showAddDest">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px;vertical-align:middle"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add Destination
+          </button>
         </div>
         <div class="add-dest-form card" *ngIf="showAddDest" style="padding:24px;margin-bottom:24px;">
           <h3>Add New Destination</h3>
@@ -349,9 +388,9 @@ import { AuthService } from '../../services/auth.service';
               </select>
             </div>
             <div class="form-group"><label>Best Season</label><input type="text" [(ngModel)]="newDest.bestSeason"></div>
-            <div class="form-group"><label>Low Budget/day (₹)</label><input type="number" [(ngModel)]="newDest.lowBudgetPerDay"></div>
-            <div class="form-group"><label>Mid Budget/day (₹)</label><input type="number" [(ngModel)]="newDest.midBudgetPerDay"></div>
-            <div class="form-group"><label>Luxury Budget/day (₹)</label><input type="number" [(ngModel)]="newDest.luxuryBudgetPerDay"></div>
+            <div class="form-group"><label>Low Budget/day (&#8377;)</label><input type="number" [(ngModel)]="newDest.lowBudgetPerDay"></div>
+            <div class="form-group"><label>Mid Budget/day (&#8377;)</label><input type="number" [(ngModel)]="newDest.midBudgetPerDay"></div>
+            <div class="form-group"><label>Luxury Budget/day (&#8377;)</label><input type="number" [(ngModel)]="newDest.luxuryBudgetPerDay"></div>
             <div class="form-group"><label>Image URL</label><input type="text" [(ngModel)]="newDest.imageUrl"></div>
           </div>
           <div class="form-group"><label>Description</label><textarea [(ngModel)]="newDest.description"></textarea></div>
@@ -364,12 +403,19 @@ import { AuthService } from '../../services/auth.service';
               <h4>{{d.name}}, {{d.state}}</h4>
               <div class="dac-type">{{d.type}}</div>
               <div class="dac-stats">
-                <span>⭐ {{d.rating}}</span>
-                <span>₹{{d.lowBudgetPerDay | number}}–{{d.luxuryBudgetPerDay | number}}</span>
+                <span>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                  {{d.rating}}
+                </span>
+                <span>&#8377;{{d.lowBudgetPerDay | number}}–{{d.luxuryBudgetPerDay | number}}</span>
               </div>
               <div class="dac-actions">
-                <button class="btn-action" (click)="editDest(d)">✏ Edit</button>
-                <button class="btn-action danger" (click)="deleteDest(d.id)">🗑 Delete</button>
+                <button class="btn-action" (click)="editDest(d)">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px;vertical-align:middle"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Edit
+                </button>
+                <button class="btn-action danger" (click)="deleteDest(d.id)">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px;vertical-align:middle"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>Delete
+                </button>
               </div>
             </div>
           </div>
@@ -382,7 +428,7 @@ import { AuthService } from '../../services/auth.service';
     /* ── Admin Login ── */
     .admin-login{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1a1a2e,#0f3460)}
     .al-card{background:white;border-radius:24px;padding:48px;width:420px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.3)}
-    .al-logo{font-size:1.8rem;font-weight:700;color:#e94560;margin-bottom:16px;font-family:'Playfair Display',serif}
+    .al-logo{font-size:1.8rem;font-weight:700;color:#e94560;margin-bottom:16px;font-family:'Playfair Display',serif;display:flex;align-items:center;justify-content:center;gap:10px}
     .al-card h2{margin-bottom:8px;color:#1a1a2e}
     .al-card p{color:#6c7293;font-size:14px;margin-bottom:28px}
     .btn-full{width:100%;justify-content:center}
@@ -397,7 +443,7 @@ import { AuthService } from '../../services/auth.service';
     .sidebar-nav a{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;color:rgba(255,255,255,0.7);text-decoration:none;cursor:pointer;transition:all 0.15s;font-size:14px;font-weight:500}
     .sidebar-nav a:hover,.sidebar-nav a.active{background:rgba(233,69,96,0.2);color:white}
     .sidebar-nav a.active{background:rgba(233,69,96,0.3);border-left:3px solid #e94560}
-    .nav-icon{font-size:18px;flex-shrink:0}
+    .nav-icon{display:flex;align-items:center;justify-content:center;flex-shrink:0;width:22px;height:22px}
     .nav-label{white-space:nowrap;overflow:hidden}
     .sidebar-logout{display:flex;align-items:center;gap:12px;padding:16px 22px;color:rgba(255,255,255,0.5);background:none;border:none;cursor:pointer;font-size:14px;border-top:1px solid rgba(255,255,255,0.1);margin-top:auto;transition:color 0.2s}
     .sidebar-logout:hover{color:#e94560}
@@ -419,13 +465,13 @@ import { AuthService } from '../../services/auth.service';
     .kpi-card.red{background:linear-gradient(135deg,#c62828,#ef5350)}
     .kpi-card.purple{background:linear-gradient(135deg,#4a148c,#ab47bc)}
     .kpi-card.teal{background:linear-gradient(135deg,#00695c,#26a69a)}
-    .kpi-icon{font-size:28px;margin-bottom:8px;opacity:0.9}
+    .kpi-icon{margin-bottom:8px;opacity:0.9;display:flex;align-items:center}
     .kpi-value{font-size:1.8rem;font-weight:700;font-family:'Playfair Display',serif;margin-bottom:4px}
     .kpi-label{font-size:13px;opacity:0.85;font-weight:500}
     .kpi-sub{font-size:12px;opacity:0.7;margin-top:4px}
     /* ── Chart ── */
     .chart-card{background:white;border-radius:20px;padding:24px;box-shadow:0 4px 16px rgba(0,0,0,0.06);margin-bottom:20px}
-    .chart-card h3{margin-bottom:20px;color:#1a1a2e}
+    .chart-card h3{margin-bottom:20px;color:#1a1a2e;display:flex;align-items:center}
     .bar-chart{display:flex;flex-direction:column;gap:10px}
     .bar-row{display:flex;align-items:center;gap:12px}
     .bar-label{width:100px;font-size:13px;font-weight:600;color:#1a1a2e;flex-shrink:0}
@@ -436,7 +482,7 @@ import { AuthService } from '../../services/auth.service';
     .alert-stat{flex:1;padding:16px 20px;border-radius:14px;display:flex;justify-content:space-between;align-items:center}
     .alert-stat.warn{background:#fff8e1;border-left:4px solid #ff9800}
     .alert-stat.danger{background:#ffebee;border-left:4px solid #f44336}
-    .alert-stat span{font-size:14px;color:#4a4a6a}
+    .alert-stat span{font-size:14px;color:#4a4a6a;display:flex;align-items:center}
     .alert-stat strong{font-size:1.5rem;font-weight:700}
     /* ── Toolbar ── */
     .section-toolbar{display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap}
@@ -454,9 +500,12 @@ import { AuthService } from '../../services/auth.service';
     code{background:#f0f2f8;padding:2px 8px;border-radius:6px;font-size:12px;color:#e94560}
     .role-badge{padding:3px 10px;border-radius:50px;font-size:11px;font-weight:700;background:#e3f2fd;color:#1565c0}
     .role-badge.admin{background:rgba(233,69,96,0.1);color:#e94560}
-    .status-dot.active{color:#2e7d32;font-weight:600;font-size:13px}
-    .status-dot.inactive{color:#c62828;font-weight:600;font-size:13px}
-    .type-chip{background:#f0f2f8;padding:4px 10px;border-radius:8px;font-size:12px;font-weight:600}
+    .status-dot{font-weight:600;font-size:13px;padding:3px 10px;border-radius:50px;display:inline-flex;align-items:center;gap:6px}
+    .status-dot::before{content:'';display:inline-block;width:7px;height:7px;border-radius:50%}
+    .status-dot.active{color:#2e7d32;background:#e8f5e9}.status-dot.active::before{background:#2e7d32}
+    .status-dot.inactive{color:#c62828;background:#ffebee}.status-dot.inactive::before{background:#c62828}
+    .type-chip{background:#f0f2f8;padding:4px 10px;border-radius:8px;font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:4px}
+    .badge{padding:3px 10px;border-radius:50px;font-size:11px;font-weight:700;display:inline-block}
     .badge-success,.badge-confirmed,.badge-paid{background:#e8f5e9;color:#2e7d32}
     .badge-failed,.badge-cancelled{background:#ffebee;color:#c62828}
     .badge-pending{background:#fff8e1;color:#e65100}
@@ -464,7 +513,7 @@ import { AuthService } from '../../services/auth.service';
     .badge-low{background:#e8f5e9;color:#2e7d32}
     .badge-mid{background:#fff8e1;color:#e65100}
     .badge-luxury{background:#fce4ec;color:#c2185b}
-    .btn-action{padding:5px 12px;border-radius:8px;border:1px solid #e8ecf4;background:white;font-size:12px;cursor:pointer;margin-right:4px;transition:all 0.15s}
+    .btn-action{padding:5px 12px;border-radius:8px;border:1px solid #e8ecf4;background:white;font-size:12px;cursor:pointer;margin-right:4px;transition:all 0.15s;display:inline-flex;align-items:center}
     .btn-action:hover{background:#f0f2f8}
     .btn-action.warn{border-color:#ff9800;color:#e65100}
     .btn-action.danger{border-color:#f44336;color:#c62828}
@@ -476,8 +525,8 @@ import { AuthService } from '../../services/auth.service';
     .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:2000;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
     .modal-lg{background:white;border-radius:24px;padding:32px;width:90%;max-width:800px;max-height:90vh;overflow-y:auto}
     .modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
-    .modal-header h2{font-size:1.3rem}
-    .close-btn{background:none;border:none;font-size:20px;cursor:pointer;color:#6c7293}
+    .modal-header h2{font-size:1.3rem;display:flex;align-items:center}
+    .close-btn{background:none;border:none;font-size:20px;cursor:pointer;color:#6c7293;line-height:1}
     .user-detail-grid{display:grid;grid-template-columns:280px 1fr;gap:24px}
     .ud-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #f0f2f8;font-size:14px}
     .ud-row.highlight{background:#fff5f7;padding:12px;border-radius:8px;border:none;margin:8px 0}
@@ -497,7 +546,7 @@ import { AuthService } from '../../services/auth.service';
     .dac-body{padding:16px}
     .dac-body h4{font-size:1rem;margin-bottom:4px;color:#1a1a2e}
     .dac-type{font-size:12px;color:#6c7293;margin-bottom:8px}
-    .dac-stats{display:flex;gap:12px;font-size:13px;font-weight:600;margin-bottom:12px}
+    .dac-stats{display:flex;gap:12px;font-size:13px;font-weight:600;margin-bottom:12px;align-items:center}
     .dac-actions{display:flex;gap:8px}
     @media(max-width:768px){.admin-sidebar{width:70px;}.admin-main{margin-left:70px}.kpi-grid{grid-template-columns:1fr 1fr}.user-detail-grid{grid-template-columns:1fr}}
   `]
@@ -534,19 +583,28 @@ export class AdminComponent implements OnInit {
   showAddDest = false;
   newDest: any = { name: '', state: '', type: 'BEACH', description: '', imageUrl: '', bestSeason: '', lowBudgetPerDay: 0, midBudgetPerDay: 0, luxuryBudgetPerDay: 0 };
 
+  // SVG icons for sidebar menu
+  private icons: Record<string, string> = {
+    dashboard: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>`,
+    users: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
+    bookings: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v2z"/><path d="M13 5v2"/><path d="M13 17v2"/><path d="M13 11v2"/></svg>`,
+    payments: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>`,
+    trips: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.56 3.35 2 2 0 0 1 3.53 1h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 6.18 6.18l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>`,
+    destinations: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>`,
+  };
+
   menu = [
-    { key: 'dashboard', icon: '📊', label: 'Dashboard' },
-    { key: 'users', icon: '👥', label: 'Users' },
-    { key: 'bookings', icon: '🎟', label: 'Bookings' },
-    { key: 'payments', icon: '💳', label: 'Payments' },
-    { key: 'trips', icon: '✈', label: 'Trip Plans' },
-    { key: 'destinations', icon: '🏖', label: 'Destinations' },
+    { key: 'dashboard', get icon() { return `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>`; }, label: 'Dashboard' },
+    { key: 'users', get icon() { return `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`; }, label: 'Users' },
+    { key: 'bookings', get icon() { return `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v2z"/><path d="M13 5v2"/><path d="M13 17v2"/><path d="M13 11v2"/></svg>`; }, label: 'Bookings' },
+    { key: 'payments', get icon() { return `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>`; }, label: 'Payments' },
+    { key: 'trips', get icon() { return `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.56 3.35 2 2 0 0 1 3.53 1h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 6.18 6.18l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>`; }, label: 'Trip Plans' },
+    { key: 'destinations', get icon() { return `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>`; }, label: 'Destinations' },
   ];
 
   constructor(private api: ApiService, private authService: AuthService, private router: Router) {}
 
   ngOnInit() {
-    // Check if already logged in as admin
     const user = this.authService.currentUser;
     if (user && user.role === 'ADMIN') {
       this.isAdmin = true; this.currentUser = user;
@@ -638,7 +696,8 @@ export class AdminComponent implements OnInit {
     });
   }
 
-  editDest(d: any) { /* open inline editor — left for future */ alert(`Edit ${d.name} — update via PUT /api/admin/destinations/${d.id}`); }
+  editDest(d: any) { alert(`Edit ${d.name} — update via PUT /api/admin/destinations/${d.id}`); }
+
   deleteDest(id: number) {
     if (!confirm('Delete this destination?')) return;
     this.api.delete<any>(`/admin/destinations/${id}`).subscribe({ next: () => this.loadDestinations() });
@@ -649,7 +708,16 @@ export class AdminComponent implements OnInit {
     return max > 0 ? (val / max) * 100 : 0;
   }
 
-  getIcon(type: string): string { const i: any = {FLIGHT:'✈',TRAIN:'🚂',BUS:'🚌',CAB:'🚕'}; return i[type]||'🎟'; }
+  // Returns an inline SVG string for the booking type chip
+  getIcon(type: string): string {
+    const icons: Record<string, string> = {
+      FLIGHT: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.56 3.35 2 2 0 0 1 3.53 1h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 6.18 6.18l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>`,
+      TRAIN: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle"><rect x="4" y="3" width="16" height="14" rx="2"/><path d="M4 11h16"/><path d="M12 3v8"/><path d="M8 17l-2 4"/><path d="M16 17l2 4"/></svg>`,
+      BUS: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle"><path d="M8 6v6"/><path d="M16 6v6"/><path d="M2 12h19.6"/><path d="M18 18h3s.5-1.7.8-2.8c.1-.4.2-.8.2-1.2 0-.4-.1-.8-.2-1.2l-1.4-5C20.1 6.8 19.1 6 18 6H4a2 2 0 0 0-2 2v10h3"/><circle cx="7" cy="18" r="2"/><path d="M9 18h5"/><circle cx="16" cy="18" r="2"/></svg>`,
+      CAB: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle"><path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v9a2 2 0 0 1-2 2h-2"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg>`,
+    };
+    return icons[type] || `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v2z"/></svg>`;
+  }
 
   getTitle(): string { return this.menu.find(m => m.key === this.activeSection)?.label || 'Dashboard'; }
 
