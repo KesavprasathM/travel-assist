@@ -5,6 +5,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TripService } from '../../services/trip.service';
 import { DestinationService } from '../../services/destination.service';
 import { Destination, TripPlan } from '../../models';
+import { ChatContextService } from '../../services/chat-context.service';
 
 @Component({
   selector: 'app-planner',
@@ -239,7 +240,7 @@ export class PlannerComponent implements OnInit {
   budgets = [{key:'LOW',icon:'💰',label:'Budget'},{key:'MID',icon:'💳',label:'Mid-Range'},{key:'LUXURY',icon:'💎',label:'Luxury'}];
   transports = [{key:'FLIGHT',icon:'✈️',label:'Flight',info:'Fastest'},{key:'TRAIN',icon:'🚂',label:'Train',info:'Economical'},{key:'BUS',icon:'🚌',label:'Bus',info:'Budget'},{key:'CAB',icon:'🚗',label:'Cab',info:'Flexible'}];
 
-  constructor(private tripService: TripService, private destService: DestinationService, private route: ActivatedRoute, private router: Router) {}
+  constructor(private tripService: TripService, private destService: DestinationService, private route: ActivatedRoute, private router: Router, private chatContext: ChatContextService) {}
 
   ngOnInit() {
     this.destService.getAll().subscribe(res => { this.destinations = res.data; });
@@ -249,11 +250,16 @@ export class PlannerComponent implements OnInit {
       if (p['date']) this.form.startDate = p['date'];
       if (p['people']) this.form.numberOfPeople = +p['people'];
       if (p['budget']) this.form.budgetType = p['budget'];
+      if (p['transport']) this.form.transportMode = p['transport'];
       if (this.form.destination) this.onDestinationChange();
+      this.syncChatContext();
     });
   }
 
-  onDestinationChange() { this.selectedDest = this.destinations.find(d => d.name === this.form.destination) || null; }
+  onDestinationChange() {
+    this.selectedDest = this.destinations.find(d => d.name === this.form.destination) || null;
+    this.syncChatContext();
+  }
 
   calcDays() {
     if (this.form.startDate && this.form.endDate) {
@@ -290,7 +296,25 @@ export class PlannerComponent implements OnInit {
     return icons[type] || '📌';
   }
 
+  syncChatContext() {
+    this.chatContext.updateContext({
+      destination: this.form.destination,
+      durationDays: this.durationDays + 1 || null,
+      budgetType: this.form.budgetType,
+      transportMode: this.form.transportMode,
+      from: this.form.source,
+      to: this.form.destination,
+      people: this.form.numberOfPeople
+    });
+  }
+
   goToBooking() {
-    this.router.navigate(['/booking'], { queryParams: { from: this.form.source, to: this.form.destination, tripId: this.generatedPlan?.id } });
+    this.router.navigate(['/booking'], { queryParams: {
+      from: this.form.source,
+      to: this.form.destination,
+      type: this.form.transportMode,
+      people: this.form.numberOfPeople,
+      tripId: this.generatedPlan?.id
+    } });
   }
 }

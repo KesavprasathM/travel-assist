@@ -7,6 +7,7 @@ import { DestinationService } from '../../services/destination.service';
 import { ReviewService } from '../../services/review.service';
 import { RecommendationService } from '../../services/recommendation.service';
 import { AuthService } from '../../services/auth.service';
+import { ChatContextService } from '../../services/chat-context.service';
 import { Destination, Review } from '../../models';
 import { WeatherWidgetComponent } from '../weather/weather-widget.component';
 import { LeafletMapComponent } from '../map/map.component';
@@ -42,18 +43,18 @@ import { LeafletMapComponent } from '../map/map.component';
     <div class="container dest-body">
       <!-- Budget Cards -->
       <div class="budget-cards">
-        <div class="budget-card low" [class.selected]="selectedBudget==='LOW'" (click)="selectedBudget='LOW';loadRecommendations()">
+        <div class="budget-card low" [class.selected]="selectedBudget==='LOW'" (click)="setSelectedBudget('LOW')">
           <div class="bc-icon">💰</div><div class="bc-label">Budget</div>
           <div class="bc-price">₹{{dest.lowBudgetPerDay | number}}<span>/day</span></div>
           <ul class="bc-features"><li>✓ Hostel</li><li>✓ Local Transport</li><li>✓ Street Food</li></ul>
         </div>
-        <div class="budget-card mid" [class.selected]="selectedBudget==='MID'" (click)="selectedBudget='MID';loadRecommendations()">
+        <div class="budget-card mid" [class.selected]="selectedBudget==='MID'" (click)="setSelectedBudget('MID')">
           <div class="bc-popular">Most Popular</div>
           <div class="bc-icon">💳</div><div class="bc-label">Mid-Range</div>
           <div class="bc-price">₹{{dest.midBudgetPerDay | number}}<span>/day</span></div>
           <ul class="bc-features"><li>✓ 3-Star Hotel</li><li>✓ Cab/Train</li><li>✓ Restaurants</li></ul>
         </div>
-        <div class="budget-card luxury" [class.selected]="selectedBudget==='LUXURY'" (click)="selectedBudget='LUXURY';loadRecommendations()">
+        <div class="budget-card luxury" [class.selected]="selectedBudget==='LUXURY'" (click)="setSelectedBudget('LUXURY')">
           <div class="bc-icon">💎</div><div class="bc-label">Luxury</div>
           <div class="bc-price">₹{{dest.luxuryBudgetPerDay | number}}<span>/day</span></div>
           <ul class="bc-features"><li>✓ 5-Star Resort</li><li>✓ Private Car</li><li>✓ Fine Dining</li></ul>
@@ -428,12 +429,19 @@ export class DestinationDetailComponent implements OnInit {
 
   constructor(private route: ActivatedRoute, private destService: DestinationService,
     private reviewService: ReviewService, private recService: RecommendationService,
-    public auth: AuthService, private router: Router, private http: HttpClient) {}
+    public auth: AuthService, private router: Router, private http: HttpClient,
+    private chatContext: ChatContextService) {}
 
   ngOnInit() {
     this.route.params.subscribe(p => {
       this.destService.getById(+p['id']).subscribe({
-        next: res => { this.dest = res.data; this.loading = false; this.loadReviews(); this.loadRecommendations(); },
+        next: res => {
+          this.dest = res.data;
+          this.loading = false;
+          this.loadReviews();
+          this.loadRecommendations();
+          this.syncChatContext();
+        },
         error: () => this.loading = false
       });
     });
@@ -447,6 +455,25 @@ export class DestinationDetailComponent implements OnInit {
     if (!this.dest) return;
     this.recService.getRecommendations({ destination: this.dest.name, budget: this.selectedBudget, people: 2, days: 5, month: new Date().toLocaleString('default',{month:'long'}) })
       .subscribe({ next: r => this.recommendation = r.data, error: ()=>{} });
+  }
+
+  setSelectedBudget(value: string) {
+    this.selectedBudget = value;
+    this.loadRecommendations();
+    this.syncChatContext();
+  }
+
+  syncChatContext() {
+    if (!this.dest) return;
+    this.chatContext.updateContext({
+      destination: this.dest.name,
+      durationDays: 5,
+      budgetType: this.selectedBudget,
+      transportMode: '',
+      from: '',
+      to: this.dest.name,
+      people: 2
+    });
   }
 
   loadPois(type: string) {

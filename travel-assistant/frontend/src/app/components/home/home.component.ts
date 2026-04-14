@@ -26,6 +26,7 @@ import { VideoBackgroundComponent } from '../video-background/video-background.c
         <a routerLink="/destinations" class="boton-elegante btn-explore">Explore</a>
         <a routerLink="/actions" class="boton-elegante btn-action">Open Action Center</a>
       </div>
+      <p class="hero-subtitle">AI-Integrated Travel Guide and Booking Assistant (India) — Dora helps you plan day-wise itineraries, suggest hotels, local food, festivals and transport pricing.</p>
       <div class="hero-pill-row">
         <div class="pill">Smart itinerary planning</div>
         <div class="pill">Instant booking actions</div>
@@ -42,7 +43,8 @@ import { VideoBackgroundComponent } from '../video-background/video-background.c
     .hero-headline { max-width: 720px; margin: 0 auto; }
     .eyebrow { display: inline-block; text-transform: uppercase; letter-spacing: 0.18em; font-size: 0.85rem; color: #8b96ff; margin-bottom: 18px; font-weight: 700; }
     .hero-headline h1 { font-size: clamp(2.8rem, 5vw, 4.8rem); line-height: 1.02; margin-bottom: 18px; letter-spacing: -0.03em; }
-    .hero-headline p { font-size: 1.05rem; max-width: 650px; margin: 0 auto; color: rgba(255,255,255,0.9); line-height: 1.75; }
+    .hero-headline p, .hero-subtitle { font-size: 1.05rem; max-width: 650px; margin: 0 auto; color: rgba(255,255,255,0.9); line-height: 1.75; }
+    .hero-subtitle { margin-top: 16px; opacity: 0.95; }
     .hero-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 18px; margin-top: 12px; }
     .boton-elegante { padding: 15px 30px; border: 2px solid #2c2c2c; background-color: #1a1a1a; color: #ffffff; font-size: 1.15rem; cursor: pointer; border-radius: 30px; transition: all 0.4s ease; outline: none; position: relative; overflow: hidden; font-weight: bold; text-decoration: none; min-width: 190px; }
     .boton-elegante::after { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0) 70%); transform: scale(0); transition: transform 0.5s ease; }

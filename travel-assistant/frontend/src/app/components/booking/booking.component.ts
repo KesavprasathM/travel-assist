@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BookingService } from '../../services/booking.service';
 import { TransportOption } from '../../models';
+import { ChatContextService } from '../../services/chat-context.service';
 
 @Component({
   selector: 'app-booking',
@@ -206,14 +207,16 @@ export class BookingComponent implements OnInit {
   today = new Date().toISOString().split('T')[0];
   transportTypes = [{key:'FLIGHT',icon:'✈',label:'Flight'},{key:'TRAIN',icon:'🚂',label:'Train'},{key:'BUS',icon:'🚌',label:'Bus'},{key:'CAB',icon:'🚗',label:'Cab'}];
 
-  constructor(private bookingService: BookingService, private route: ActivatedRoute, private router: Router) {}
+  constructor(private bookingService: BookingService, private route: ActivatedRoute, private router: Router, private chatContext: ChatContextService) {}
 
   ngOnInit() {
     this.route.queryParams.subscribe(p => {
       if (p['from']) this.searchForm.from = p['from'];
       if (p['to']) this.searchForm.to = p['to'];
       if (p['type']) this.searchForm.type = p['type'];
+      if (p['people']) this.searchForm.passengers = +p['people'];
       this.searchForm.date = this.today;
+      this.syncChatContext();
       if (this.searchForm.from && this.searchForm.to) this.searchTransports();
     });
   }
@@ -247,6 +250,16 @@ export class BookingComponent implements OnInit {
     this.selectedClassMap = {[transport.id]: cls.name};
     this.passengers = Array(this.searchForm.passengers).fill(null).map(() => ({name:'',age:'',gender:'M'}));
     this.showBookingForm = true;
+  }
+
+  syncChatContext() {
+    this.chatContext.updateContext({
+      destination: this.searchForm.to,
+      from: this.searchForm.from,
+      to: this.searchForm.to,
+      transportMode: this.searchForm.type,
+      people: this.searchForm.passengers
+    });
   }
 
   proceedToPayment() {

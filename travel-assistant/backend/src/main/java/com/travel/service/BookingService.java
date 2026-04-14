@@ -52,32 +52,37 @@ public class BookingService {
         List<Map<String, Object>> results = new ArrayList<>();
         String[] operators = type.equals("FLIGHT") ? new String[]{"IndiGo","Air India","SpiceJet","Vistara","GoFirst"} :
                              type.equals("TRAIN") ? new String[]{"Rajdhani Express","Shatabdi Express","Duronto","Jan Shatabdi","Garib Rath"} :
-                             new String[]{"KSRTC","TSRTC","VRL Travels","RedBus Partner","Patel Travels"};
+                             new String[]{"Savaari","Mega Cabs","OLA Outstation","Uber Intercity","Meru Cabs"};
         String[] classes = type.equals("FLIGHT") ? new String[]{"Economy","Business","First"} :
                            type.equals("TRAIN") ? new String[]{"Sleeper","3AC","2AC","1AC"} :
-                           new String[]{"Seater","Sleeper","Volvo AC"};
-        Random rand = new Random(from.hashCode() + to.hashCode());
-        int base = type.equals("FLIGHT") ? 3000 : type.equals("TRAIN") ? 500 : 300;
+                           new String[]{"Sedan","SUV","Mini","Prime"};
+        Random rand = new Random(Math.abs(from.hashCode() + to.hashCode()));
+        int base = type.equals("FLIGHT") ? 3200 : type.equals("TRAIN") ? 600 : 1200;
         for (int i = 0; i < operators.length; i++) {
             Map<String, Object> t = new LinkedHashMap<>();
             t.put("id", "T" + (i+1) + System.currentTimeMillis());
             t.put("operator", operators[i]);
             t.put("type", type);
             t.put("from", from); t.put("to", to); t.put("date", date);
-            int hour = 5 + rand.nextInt(16);
+            int hour = 5 + rand.nextInt(14);
             t.put("departure", String.format("%02d:%02d", hour, rand.nextInt(4)*15));
-            int dur = type.equals("FLIGHT") ? 1+rand.nextInt(3) : type.equals("TRAIN") ? 4+rand.nextInt(20) : 6+rand.nextInt(12);
-            t.put("arrivalHours", dur);
-            t.put("arrival", String.format("%02d:%02d", (hour+dur)%24, rand.nextInt(4)*15));
+            int dur = type.equals("FLIGHT") ? 1 + rand.nextInt(3) : type.equals("TRAIN") ? 4 + rand.nextInt(12) : 2 + rand.nextInt(4);
+            t.put("arrival", String.format("%02d:%02d", (hour + dur) % 24, rand.nextInt(4)*15));
             t.put("duration", dur + "h " + (rand.nextInt(4)*15) + "m");
             List<Map<String,Object>> cls = new ArrayList<>();
             for (String c : classes) {
-                int price = (base + rand.nextInt(base)) * (c.contains("First")||c.contains("1AC") ? 3 : c.contains("Business")||c.contains("2AC") ? 2 : 1);
-                cls.add(Map.of("name",c,"price",price,"available",5+rand.nextInt(20)));
+                int multiplier = 1;
+                if (type.equals("FLIGHT")) multiplier = c.equals("Business") ? 2 : c.equals("First") ? 3 : 1;
+                if (type.equals("TRAIN")) multiplier = c.equals("2AC") ? 2 : c.equals("1AC") ? 3 : 1;
+                if (type.equals("CAB")) multiplier = c.equals("SUV") || c.equals("Prime") ? 2 : 1;
+                int price = (base + rand.nextInt(base)) * multiplier;
+                cls.add(Map.of("name", c, "price", price, "available", 3 + rand.nextInt(12)));
             }
             t.put("classes", cls);
-            t.put("rating", 3.5 + rand.nextDouble()*1.5);
-            t.put("amenities", type.equals("FLIGHT") ? List.of("Meal","WiFi","USB") : List.of("Blanket","Pillow","Charging"));
+            t.put("rating", Math.round((3.5 + rand.nextDouble() * 1.5) * 10.0) / 10.0);
+            t.put("amenities", type.equals("FLIGHT") ? List.of("Meal","WiFi","USB") :
+                                type.equals("TRAIN") ? List.of("Blanket","Pillow","Charging","Pantry") :
+                                List.of("Water","Phone Charger","Luggage","Live Tracking"));
             results.add(t);
         }
         return results;

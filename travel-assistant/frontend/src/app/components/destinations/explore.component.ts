@@ -70,21 +70,21 @@ import { Destination } from '../../models';
     .section-title-row { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-bottom: 24px; flex-wrap: wrap; }
     .section-title-row h2 { margin: 0; font-size: 2rem; }
     .section-title-row p { margin: 6px 0 0; color: #556b87; }
-    .destinations-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; }
-    .dest-card { background: white; border-radius: 24px; box-shadow: 0 18px 45px rgba(15,23,42,0.08); overflow: hidden; cursor: pointer; transition: transform 0.3s ease, box-shadow 0.3s ease; }
+    .destinations-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; align-items: start; }
+    .dest-card { display: flex; flex-direction: column; justify-content: space-between; background: white; border-radius: 24px; box-shadow: 0 18px 45px rgba(15,23,42,0.08); overflow: hidden; cursor: pointer; transition: transform 0.3s ease, box-shadow 0.3s ease; min-height: 100%; }
     .dest-card:hover { transform: translateY(-4px); }
-    .dest-img-wrap { position: relative; min-height: 220px; overflow: hidden; }
-    .dest-img-wrap img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; }
+    .dest-img-wrap { position: relative; height: 260px; overflow: hidden; }
+    .dest-img-wrap img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; display: block; }
     .dest-card:hover .dest-img-wrap img { transform: scale(1.03); }
     .dest-type-badge { position: absolute; top: 18px; left: 18px; background: rgba(15,23,42,0.82); color: white; padding: 8px 14px; border-radius: 999px; font-size: 12px; font-weight: 700; }
     .dest-budget-info { position: absolute; bottom: 18px; right: 18px; background: rgba(249,115,22,0.95); color: white; padding: 6px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; }
-    .dest-info { padding: 24px; }
+    .dest-info { padding: 24px; display: flex; flex-direction: column; gap: 14px; flex: 1; }
     .dest-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 12px; }
     .dest-header h3 { margin: 0; font-size: 1.4rem; }
     .dest-state { color: #6b7280; margin: 6px 0 0; font-size: 13px; }
     .dest-rating { font-weight: 700; color: #1f2937; min-width: 92px; text-align: right; }
     .review-count { font-size: 12px; color: #6b7280; font-weight: 400; }
-    .dest-desc { color: #475569; line-height: 1.8; margin-bottom: 16px; }
+    .dest-desc { color: #475569; line-height: 1.8; margin: 0; flex: 1; }
     .dest-tags { display: flex; flex-wrap: wrap; gap: 8px; }
     .tag { background: #eef2ff; color: #2563eb; padding: 8px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; }
     @media (max-width: 760px) {

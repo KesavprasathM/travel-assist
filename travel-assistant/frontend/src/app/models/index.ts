@@ -35,6 +35,14 @@ export interface Review {
   title: string; content: string; verified: boolean;
   createdAt: string; user?: { name: string };
 }
+export interface ChatResponse {
+  reply: string;
+  context: any;
+  quickReplies?: string[];
+  transportOptions?: any[];
+  hotelOptions?: string[];
+  requiresLogin?: boolean;
+}
 export interface Payment {
   id: number; transactionId: string; amount: number;
   paymentMethod: string; status: string; completedAt: string;

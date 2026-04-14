@@ -10,6 +10,7 @@ export const routes: Routes = [
   { path: 'destinations/:id', loadComponent: () => import('./components/destinations/destination-detail.component').then(m => m.DestinationDetailComponent) },
   { path: 'planner', loadComponent: () => import('./components/planner/planner.component').then(m => m.PlannerComponent), canActivate: [authGuard] },
   { path: 'actions', loadComponent: () => import('./components/actions/actions.component').then(m => m.ActionsComponent) },
+  { path: 'chat', loadComponent: () => import('./components/chatbot/chatbot.component').then(m => m.ChatbotComponent) },
   { path: 'profile', loadComponent: () => import('./components/profile/profile.component').then(m => m.ProfileComponent), canActivate: [authGuard] },
   { path: 'community', loadComponent: () => import('./components/community/community.component').then(m => m.CommunityComponent) },
   { path: 'feedback', loadComponent: () => import('./components/feedback/feedback.component').then(m => m.FeedbackComponent) },
