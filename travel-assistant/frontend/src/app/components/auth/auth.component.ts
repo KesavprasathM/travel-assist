@@ -13,16 +13,17 @@ import { AuthService } from '../../services/auth.service';
     <div class="container" [class.active]="mode==='register'">
       <div class="form-container sign-up">
         <form (ngSubmit)="register()" #regForm="ngForm">
-          <h1>Create Account</h1>
+          <h1>Sign Up!</h1>
           <div class="social-icons">
-            <a href="#" class="icon"><i class="fa-brands fa-google"></i></a>
-            <a href="#" class="icon"><i class="fa-brands fa-facebook-f"></i></a>
-            <a href="#" class="icon"><i class="fa-brands fa-microsoft"></i></a>
-            <a href="#" class="icon"><i class="fa-brands fa-github"></i></a>
+            <a href="#" class="icon google" title="Google" (click)="startOAuth('google', $event)"><img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google" class="social-logo" /></a>
+            <a href="#" class="icon facebook" title="Facebook" (click)="startOAuth('facebook', $event)"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b9/2023_Facebook_icon.svg" alt="Facebook" class="social-logo" /></a>
+            <a href="#" class="icon microsoft" title="Microsoft" (click)="startOAuth('microsoft', $event)"><img src="https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg" alt="Microsoft" class="social-logo" /></a>
+            <a href="#" class="icon apple" title="Apple" (click)="startOAuth('apple', $event)"><img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="Apple" class="social-logo" /></a>
           </div>
           <span>or use your email for registration</span>
           <input type="text" placeholder="Name" [(ngModel)]="registerData.name" name="name" required>
           <input type="email" placeholder="Email" [(ngModel)]="registerData.email" name="email" required>
+          <input type="tel" inputmode="tel" placeholder="Phone" [(ngModel)]="registerData.phone" name="phone" required>
           <input type="password" placeholder="Password" [(ngModel)]="registerData.password" name="password" required minlength="6">
           <button type="submit" class="btn btn-primary btn-full" [disabled]="loading">{{ loading ? 'Creating...' : 'Sign Up' }}</button>
           <div *ngIf="mode==='register' && success" class="alert alert-success">{{ success }}</div>
@@ -33,10 +34,10 @@ import { AuthService } from '../../services/auth.service';
         <form (ngSubmit)="login()" #loginForm="ngForm">
           <h1>Sign In</h1>
           <div class="social-icons">
-            <a href="#" class="icon"><i class="fa-brands fa-google"></i></a>
-            <a href="#" class="icon"><i class="fa-brands fa-facebook-f"></i></a>
-            <a href="#" class="icon"><i class="fa-brands fa-microsoft"></i></a>
-            <a href="#" class="icon"><i class="fa-brands fa-github"></i></a>
+            <a href="#" class="icon google" title="Google" (click)="startOAuth('google', $event)"><img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google" class="social-logo" /></a>
+            <a href="#" class="icon facebook" title="Facebook" (click)="startOAuth('facebook', $event)"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b9/2023_Facebook_icon.svg" alt="Facebook" class="social-logo" /></a>
+            <a href="#" class="icon microsoft" title="Microsoft" (click)="startOAuth('microsoft', $event)"><img src="https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg" alt="Microsoft" class="social-logo" /></a>
+            <a href="#" class="icon apple" title="Apple" (click)="startOAuth('apple', $event)"><img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="Apple" class="social-logo" /></a>
           </div>
           <span>or use your email password</span>
           <input type="email" placeholder="Email" [(ngModel)]="loginData.email" name="email" required>
@@ -109,6 +110,13 @@ import { AuthService } from '../../services/auth.service';
       margin-bottom: 18px;
       display: inline-block;
     }
+    .social-login-title {
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      color: #777;
+      text-transform: uppercase;
+      margin-top: 10px;
+    }
     .container a {
       color: #333;
       font-size: 13px;
@@ -119,16 +127,17 @@ import { AuthService } from '../../services/auth.service';
     .container button {
       background-color: #512da8;
       color: #fff;
-      font-size: 12px;
-      padding: 10px 45px;
+      font-size: 14px;
+      padding: 14px 45px;
       border: 1px solid transparent;
-      border-radius: 8px;
-      font-weight: 600;
-      letter-spacing: 0.5px;
+      border-radius: 12px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
       text-transform: uppercase;
-      margin-top: 10px;
+      margin-top: 16px;
       cursor: pointer;
       transition: all 0.3s ease;
+      min-width: 180px;
     }
     .container button:hover { transform: translateY(-1px); }
     .container button.hidden {
@@ -145,16 +154,30 @@ import { AuthService } from '../../services/auth.service';
       height: 100%;
       text-align: center;
     }
+    .btn-full {
+      width: 100%;
+      max-width: 320px;
+    }
     .container input {
-      background-color: rgba(238, 238, 238, 0.96);
-      border: 1px solid rgba(148, 163, 184, 0.6);
-      margin: 8px 0;
-      padding: 10px 15px;
-      font-size: 13px;
-      border-radius: 8px;
+      background-color: rgba(248, 250, 252, 0.98);
+      border: 1px solid rgba(148, 163, 184, 0.55);
+      margin: 12px 0;
+      padding: 14px 16px;
+      font-size: 14px;
+      border-radius: 14px;
       width: 100%;
       outline: none;
       color: #111827;
+      min-height: 52px;
+      transition: border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+    .container input::placeholder {
+      color: #9ca3af;
+    }
+    .container input:focus {
+      border-color: rgba(59, 130, 246, 0.95);
+      background-color: #fff;
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.08);
     }
     .container input:focus {
       border-color: rgba(59, 130, 246, 0.9);
@@ -199,21 +222,52 @@ import { AuthService } from '../../services/auth.service';
       flex-wrap: wrap;
     }
     .social-icons a {
-      border: 1px solid #ccc;
-      border-radius: 20%;
+      border: 1px solid transparent;
+      border-radius: 14px;
       display: inline-flex;
       justify-content: center;
       align-items: center;
-      margin: 0 3px;
-      width: 40px;
-      height: 40px;
-      transition: all 0.3s ease;
-      color: #512da8;
+      width: 52px;
+      height: 52px;
+      transition: all 0.25s ease;
+      color: #fff;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+      background: #fff;
+    }
+    .social-icons .social-logo {
+      width: 24px;
+      height: 24px;
+      object-fit: contain;
+    }
+    .auth-page-title {
+      font-size: 32px;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 18px;
+      color: #1f1f1f;
+    }
+    .social-icons a.google {
+      border-color: rgba(0,0,0,0.12);
+      color: #4285f4;
+    }
+    .social-icons a.facebook {
+      background: #1877f2;
+      color: #fff;
+    }
+    .social-icons a.microsoft {
+      background: #f2f2f2;
+      color: #000;
+    }
+    .social-icons a.apple {
+      background: #fff;
+      color: #000;
     }
     .social-icons a:hover {
-      transform: scale(1.1);
-      border-color: #512da8;
-      color: #2a0d61;
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 12px 24px rgba(0,0,0,0.16);
+    }
+    .social-icons a.google:hover {
+      border-color: rgba(66, 133, 244, 0.4);
     }
     .toggle-container {
       position: absolute;
@@ -281,7 +335,7 @@ export class AuthComponent implements OnInit {
   mode: 'login' | 'register' = 'login';
   loading = false; error = ''; success = ''; showPassword = false;
   loginData = { email: '', password: '' };
-  registerData = { name: '', email: '', password: '', phone: '', city: '' };
+  registerData = { name: '', email: '', password: '', phone: '' };
 
   constructor(private authService: AuthService, private router: Router, private route: ActivatedRoute) {}
 
@@ -289,6 +343,19 @@ export class AuthComponent implements OnInit {
     this.route.params.subscribe(p => {
       this.mode = p['mode'] === 'register' ? 'register' : 'login';
     });
+
+    this.route.queryParamMap.subscribe(params => {
+      const token = params.get('token');
+      if (token) {
+        const userId = Number(params.get('id')) || 0;
+        const name = params.get('name') || 'User';
+        const email = params.get('email') || '';
+        const role = params.get('role') || 'USER';
+        this.authService.socialLogin({ token, userId, name, email, role });
+        this.router.navigate(['/']);
+      }
+    });
+
     if (this.authService.isLoggedIn) this.router.navigate(['/']);
   }
 
@@ -303,6 +370,16 @@ export class AuthComponent implements OnInit {
       next: () => this.router.navigate(['/']),
       error: e => { this.error = e.error?.message || 'Login failed'; this.loading = false; }
     });
+  }
+
+  startOAuth(provider: string, event: Event) {
+    event.preventDefault();
+    const supported = ['google', 'facebook', 'microsoft', 'apple'];
+    if (!supported.includes(provider)) {
+      alert(`${provider} OAuth is not configured yet.`);
+      return;
+    }
+    window.location.href = `http://localhost:8080/oauth2/authorization/${provider}`;
   }
 
   register() {

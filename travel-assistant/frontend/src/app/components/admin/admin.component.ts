@@ -378,7 +378,7 @@ import { AuthService } from '../../services/auth.service';
           </button>
         </div>
         <div class="add-dest-form card" *ngIf="showAddDest" style="padding:24px;margin-bottom:24px;">
-          <h3>Add New Destination</h3>
+          <h3>{{ editingDest ? 'Edit Destination' : 'Add New Destination' }}</h3>
           <div class="grid-2">
             <div class="form-group"><label>Name</label><input type="text" [(ngModel)]="newDest.name"></div>
             <div class="form-group"><label>State</label><input type="text" [(ngModel)]="newDest.state"></div>
@@ -393,8 +393,15 @@ import { AuthService } from '../../services/auth.service';
             <div class="form-group"><label>Luxury Budget/day (&#8377;)</label><input type="number" [(ngModel)]="newDest.luxuryBudgetPerDay"></div>
             <div class="form-group"><label>Image URL</label><input type="text" [(ngModel)]="newDest.imageUrl"></div>
           </div>
+          <div class="form-group" *ngIf="newDest.imageUrl">
+            <label>Image Preview</label>
+            <img [src]="newDest.imageUrl" alt="Preview" class="img-preview">
+          </div>
           <div class="form-group"><label>Description</label><textarea [(ngModel)]="newDest.description"></textarea></div>
-          <button class="btn btn-primary" (click)="addDestination()">Save Destination</button>
+          <div class="form-actions">
+            <button class="btn btn-primary" (click)="addDestination()">{{ editingDest ? 'Update Destination' : 'Save Destination' }}</button>
+            <button class="btn btn-action" type="button" (click)="resetDestForm()">Cancel</button>
+          </div>
         </div>
         <div class="dest-admin-grid">
           <div class="dest-admin-card" *ngFor="let d of adminDestinations">
@@ -432,6 +439,9 @@ import { AuthService } from '../../services/auth.service';
     .al-card h2{margin-bottom:8px;color:#1a1a2e}
     .al-card p{color:#6c7293;font-size:14px;margin-bottom:28px}
     .btn-full{width:100%;justify-content:center}
+    .img-preview{width:100%;max-height:250px;object-fit:cover;border-radius:14px;border:1px solid #e8ecf4;margin-top:10px}
+    .form-actions{display:flex;gap:12px;align-items:center;margin-top:16px}
+    .form-actions .btn-action{border:1px solid #e8ecf4;background:#fff;color:#1a1a2e}
     /* ── Shell ── */
     .admin-shell{display:flex;min-height:100vh;background:#f0f2f8}
     /* ── Sidebar ── */
@@ -581,6 +591,7 @@ export class AdminComponent implements OnInit {
   tripDestFilter = ''; tripPage = 0;
 
   showAddDest = false;
+  editingDest: any = null;
   newDest: any = { name: '', state: '', type: 'BEACH', description: '', imageUrl: '', bestSeason: '', lowBudgetPerDay: 0, midBudgetPerDay: 0, luxuryBudgetPerDay: 0 };
 
   // SVG icons for sidebar menu
@@ -689,14 +700,32 @@ export class AdminComponent implements OnInit {
     this.api.put<any>(`/admin/users/${id}/toggle-status`).subscribe({ next: () => this.loadUsers() });
   }
 
+  resetDestForm() {
+    this.editingDest = null;
+    this.newDest = { name: '', state: '', type: 'BEACH', description: '', imageUrl: '', bestSeason: '', lowBudgetPerDay: 0, midBudgetPerDay: 0, luxuryBudgetPerDay: 0 };
+    this.showAddDest = false;
+  }
+
   addDestination() {
+    if (this.editingDest) {
+      this.api.put<any>(`/admin/destinations/${this.editingDest.id}`, this.newDest).subscribe({
+        next: () => { this.resetDestForm(); this.loadDestinations(); },
+        error: () => {}
+      });
+      return;
+    }
+
     this.api.post<any>('/admin/destinations', this.newDest).subscribe({
-      next: () => { this.showAddDest = false; this.loadDestinations(); },
+      next: () => { this.resetDestForm(); this.loadDestinations(); },
       error: () => {}
     });
   }
 
-  editDest(d: any) { alert(`Edit ${d.name} — update via PUT /api/admin/destinations/${d.id}`); }
+  editDest(d: any) {
+    this.showAddDest = true;
+    this.editingDest = d;
+    this.newDest = { ...d };
+  }
 
   deleteDest(id: number) {
     if (!confirm('Delete this destination?')) return;

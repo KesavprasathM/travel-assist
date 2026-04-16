@@ -61,17 +61,39 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
     private String extractEmail(String registrationId, Map<String, Object> attributes) {
         return switch (registrationId.toLowerCase()) {
-            case "google" -> (String) attributes.get("email");
-            case "facebook" -> (String) attributes.get("email");
+            case "google", "facebook", "microsoft", "apple" -> (String) attributes.get("email");
             default -> (String) attributes.get("email");
         };
     }
 
     private String extractName(String registrationId, Map<String, Object> attributes) {
-        return switch (registrationId.toLowerCase()) {
-            case "google" -> (String) attributes.get("name");
-            case "facebook" -> (String) attributes.get("name");
+        String name = switch (registrationId.toLowerCase()) {
+            case "google", "facebook", "microsoft" -> (String) attributes.get("name");
+            case "apple" -> extractAppleName(attributes);
             default -> (String) attributes.get("name");
         };
+        if (name == null || name.isBlank()) {
+            name = (String) attributes.get("email");
+        }
+        return name;
+    }
+
+    @SuppressWarnings("unchecked")
+    private String extractAppleName(Map<String, Object> attributes) {
+        Object nameObject = attributes.get("name");
+        if (nameObject instanceof Map<?, ?> nameMap) {
+            String firstName = (String) nameMap.get("firstName");
+            String lastName = (String) nameMap.get("lastName");
+            if (firstName != null && lastName != null) {
+                return firstName + " " + lastName;
+            }
+            if (firstName != null) {
+                return firstName;
+            }
+            if (lastName != null) {
+                return lastName;
+            }
+        }
+        return (String) attributes.get("email");
     }
 }

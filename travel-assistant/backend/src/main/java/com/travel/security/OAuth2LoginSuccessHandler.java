@@ -40,7 +40,8 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         String redirectUrl = "http://localhost:4200/auth/login?token=" + URLEncoder.encode(token, StandardCharsets.UTF_8)
             + "&name=" + URLEncoder.encode(user.getName(), StandardCharsets.UTF_8)
             + "&email=" + URLEncoder.encode(user.getEmail(), StandardCharsets.UTF_8)
-            + "&id=" + user.getId();
+            + "&id=" + user.getId()
+            + "&role=" + URLEncoder.encode(user.getRole(), StandardCharsets.UTF_8);
 
         response.sendRedirect(redirectUrl);
     }

@@ -24,7 +24,7 @@ import { ChatContextService } from '../../services/chat-context.service';
         <div class="step-header"><div class="step-badge">1</div><h2>Choose Route & Dates</h2></div>
         <div class="grid-2">
           <div class="form-group">
-            <label>📍 From (Source)</label>
+            <label>📍 From </label>
             <input type="text" [(ngModel)]="form.source" placeholder="e.g. Bengaluru" list="source-list">
             <datalist id="source-list">
               <option *ngFor="let c of cities" [value]="c"></option>
@@ -47,7 +47,7 @@ import { ChatContextService } from '../../services/chat-context.service';
           </div>
         </div>
         <div class="duration-badge" *ngIf="durationDays>0">
-          🌙 {{durationDays}} nights {{durationDays+1}} days trip
+          {{durationDays}} days ☾ {{durationDays+1}} nights  trip
         </div>
       </div>
 
@@ -55,7 +55,7 @@ import { ChatContextService } from '../../services/chat-context.service';
       <div class="planner-card" [class.active]="step>=2">
         <div class="step-header"><div class="step-badge">2</div><h2>Travellers & Budget</h2></div>
         <div class="form-group">
-          <label>👥 Number of Travellers</label>
+          <label> Number of Travellers</label>
           <div class="people-selector">
             <button (click)="form.numberOfPeople=max(1,form.numberOfPeople-1)">−</button>
             <span>{{form.numberOfPeople}} {{form.numberOfPeople===1?'Person':'People'}}</span>
@@ -94,7 +94,7 @@ import { ChatContextService } from '../../services/chat-context.service';
           </div>
         </div>
         <div class="ai-recommendation" *ngIf="selectedDest">
-          <div class="air-icon">🤖</div>
+          <div class="air-icon"></div>
           <div>
             <strong>AI Recommendation</strong>
             <p>Based on distance and your budget, we recommend <strong>{{getRecommendedTransport()}}</strong> for this trip.</p>
@@ -105,7 +105,7 @@ import { ChatContextService } from '../../services/chat-context.service';
       <div class="error-msg" *ngIf="error">⚠️ {{error}}</div>
 
       <button class="btn btn-primary btn-generate" [disabled]="loading" (click)="generatePlan()">
-        {{loading ? '🤖 Generating Your Plan...' : '🚀 Generate AI Trip Plan'}}
+        {{loading ? ' Generating Your Plan...' : '🚀 Generate AI Trip Plan'}}
         <span *ngIf="loading" class="btn-spinner"></span>
       </button>
     </div>

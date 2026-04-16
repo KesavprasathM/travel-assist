@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ChatService, ChatResponse } from '../../services/chat.service';
 import { ChatContextService, ChatContext } from '../../services/chat-context.service';
+import { AuthService } from '../../services/auth.service';
 
 interface ChatMessage {
   speaker: 'bot' | 'user';
@@ -16,7 +17,7 @@ interface ChatMessage {
   template: `
   <div class="dora-widget" [class.open]="open">
     <button class="widget-toggle" (click)="toggleOpen()">
-      <span>🧳 Dora</span>
+      <span>❖</span>
       <span *ngIf="!open">Chat</span>
       <span *ngIf="open">Close</span>
     </button>
@@ -27,13 +28,12 @@ interface ChatMessage {
           <div class="widget-title">Dora — Travel Assistant</div>
           <div class="widget-sub">Ask about the current destination, hotels, transport, budget or booking.</div>
         </div>
-        <button class="close-btn" (click)="toggleOpen()">✕</button>
       </div>
 
       <div class="widget-context">
         <div class="ctx-item">
           <label>Current</label>
-          <input type="text" [(ngModel)]="context.destination" (ngModelChange)="updateContext()" placeholder="General India travel" />
+          <input type="text" [(ngModel)]="context.destination" (ngModelChange)="updateContext()" placeholder="source " />
         </div>
         <div class="ctx-item">
           <label>Route</label>
@@ -71,17 +71,22 @@ interface ChatMessage {
       <div class="widget-quick">
         <button class="quick" *ngFor="let quick of quickReplies" (click)="sendQuick(quick)">{{ quick }}</button>
       </div>
+      <div class="widget-footer">
+        <button class="close-btn close-bottom" (click)="toggleOpen()">Close</button>
+      </div>
     </div>
   </div>
   `,
   styles: [`
     .dora-widget { position: fixed; right: 24px; bottom: 24px; z-index: 2000; font-family: 'Inter', sans-serif; }
     .widget-toggle { display: flex; align-items: center; justify-content: space-between; gap: 10px; background: linear-gradient(135deg,#4f46e5,#0ea5e9); color: white; border: none; border-radius: 999px; padding: 12px 18px; cursor: pointer; box-shadow: 0 16px 40px rgba(15,23,42,0.18); font-weight: 700; }
-    .widget-window { width: min(420px, calc(100vw - 32px)); background: white; border-radius: 24px; box-shadow: 0 24px 64px rgba(15,23,42,0.18); margin-top: 14px; overflow: hidden; display: flex; flex-direction: column; }
+    .widget-window { width: min(420px, calc(100vw - 32px)); background: white; border-radius: 24px; box-shadow: 0 24px 64px rgba(15,23,42,0.18); margin-top: 14px; overflow: hidden; display: flex; flex-direction: column; max-height: calc(100vh - 80px); }
     .widget-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; padding: 18px 20px; border-bottom: 1px solid #eef2ff; }
     .widget-title { font-size: 1rem; font-weight: 700; color: #101828; }
     .widget-sub { margin-top: 6px; font-size: 13px; color: #475569; line-height: 1.5; }
-    .close-btn { background: transparent; border: none; font-size: 18px; cursor: pointer; color: #475569; }
+    .close-btn { background: transparent; border: none; font-size: 14px; cursor: pointer; color: #475569; }
+    .widget-footer { padding: 16px 20px 20px; position: sticky; bottom: 0; background: white; z-index: 2; display: flex; justify-content: flex-end; border-top: 1px solid #eef2ff; }
+    .close-bottom { border: 1px solid #cbd5e1; border-radius: 999px; padding: 10px 16px; background: #f8fafc; color: #334155; font-weight: 700; }
     .widget-context { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; padding: 0 20px 16px; color: #475569; font-size: 13px; }
     .ctx-item { background: #f8fafc; border-radius: 14px; padding: 10px 12px; display: flex; flex-direction: column; gap: 8px; }
     .ctx-item label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #334155; }
@@ -114,11 +119,15 @@ export class ChatWidgetComponent implements OnInit {
   ];
   context: ChatContext = { destination: '', durationDays: null, budgetType: 'MID', people: 1, from: '', to: '' };
 
-  constructor(private chatService: ChatService, private contextService: ChatContextService) {}
+  constructor(private chatService: ChatService, private contextService: ChatContextService, private authService: AuthService) {}
 
   ngOnInit() {
     this.contextService.context$.subscribe(ctx => { this.context = ctx; });
-    this.addBotMessage('Hi! I am Dora. I can answer using the current page context and destination information.');
+    if (!this.authService.isLoggedIn) {
+      this.addBotMessage('Please sign in to use Dora chat.');
+    } else {
+      this.addBotMessage('Hi! I am Dora. I can answer using the current page context and destination information.');
+    }
   }
 
   toggleOpen() { this.open = !this.open; }
@@ -142,6 +151,11 @@ export class ChatWidgetComponent implements OnInit {
   sendMessage() {
     const message = this.messageText.trim();
     if (!message) return;
+    if (!this.authService.isLoggedIn) {
+      this.messageText = '';
+      this.addBotMessage('Please sign in to use chat and continue the conversation.');
+      return;
+    }
     this.addUserMessage(message);
     this.messageText = '';
     this.sending = true;

@@ -26,8 +26,12 @@ export class LeafletMapComponent implements AfterViewInit, OnChanges {
   @Input() lon = 78.9629;
   @Input() name = 'India';
   @Input() pois: any[] = [];
+  @Input() routePath: [number, number][] = [];
   mapId = Math.random().toString(36).substring(2, 8);
   private map: any = null;
+  private mainMarker: any = null;
+  private poiLayer: any = null;
+  private routeLayer: any = null;
 
   ngAfterViewInit() { this.initMap(); }
   ngOnChanges() { if (this.map) this.updateMap(); }
@@ -66,11 +70,14 @@ export class LeafletMapComponent implements AfterViewInit, OnChanges {
         html: `<div style="background:#e94560;color:white;border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 4px 12px rgba(233,69,96,0.4);">📍</div>`,
         iconSize: [36, 36], iconAnchor: [18, 18], className: ''
       });
-      L.marker([this.lat, this.lon], { icon: mainIcon })
+      this.mainMarker = L.marker([this.lat, this.lon], { icon: mainIcon })
         .addTo(this.map)
         .bindPopup(`<strong>${this.name}</strong><br>📍 ${this.lat.toFixed(4)}, ${this.lon.toFixed(4)}`)
         .openPopup();
 
+      this.poiLayer = L.layerGroup().addTo(this.map);
+      this.routeLayer = L.layerGroup().addTo(this.map);
+      this.addRoute();
       this.addPois();
     }, 200);
   }
@@ -78,11 +85,27 @@ export class LeafletMapComponent implements AfterViewInit, OnChanges {
   updateMap() {
     if (!this.map) return;
     this.map.setView([this.lat, this.lon], 12);
+    if (this.mainMarker) {
+      this.mainMarker.setLatLng([this.lat, this.lon]);
+      this.mainMarker.setPopupContent(`<strong>${this.name}</strong><br>📍 ${this.lat.toFixed(4)}, ${this.lon.toFixed(4)}`);
+    }
+    if (!this.poiLayer) {
+      this.poiLayer = L.layerGroup().addTo(this.map);
+    }
+    if (!this.routeLayer) {
+      this.routeLayer = L.layerGroup().addTo(this.map);
+    }
+    this.addRoute();
     this.addPois();
   }
 
   addPois() {
     if (!this.map || !this.pois) return;
+    if (this.poiLayer) {
+      this.poiLayer.clearLayers();
+    } else {
+      this.poiLayer = L.layerGroup().addTo(this.map);
+    }
     const icons: any = {HOTEL:'🏨',RESTAURANT:'🍽',ATTRACTION:'🏛',HOSPITAL:'🏥',ATM:'🏧'};
     this.pois.forEach(poi => {
       if (!poi.lat || !poi.lon) return;
@@ -91,8 +114,27 @@ export class LeafletMapComponent implements AfterViewInit, OnChanges {
         iconSize: [28, 28], iconAnchor: [14, 14], className: ''
       });
       L.marker([poi.lat, poi.lon], { icon })
-        .addTo(this.map)
+        .addTo(this.poiLayer)
         .bindPopup(`<strong>${poi.name}</strong><br>${poi.type}${poi.openingHours ? '<br>⏰ ' + poi.openingHours : ''}`);
     });
+  }
+
+  addRoute() {
+    if (!this.map) return;
+    if (!this.routeLayer) {
+      this.routeLayer = L.layerGroup().addTo(this.map);
+    }
+    this.routeLayer.clearLayers();
+    if (!this.routePath || this.routePath.length < 2) return;
+    const routeLine = L.polyline(this.routePath, { color: '#2563eb', weight: 4, opacity: 0.75 });
+    routeLine.addTo(this.routeLayer);
+    const start = this.routePath[0];
+    const end = this.routePath[this.routePath.length - 1];
+    const markerIcon = (symbol: string) => L.divIcon({
+      html: `<div style="background:#2563eb;color:white;border-radius:50%;width:30px;height:30px;display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 2px 8px rgba(0,0,0,0.2);">${symbol}</div>`,
+      iconSize: [30, 30], iconAnchor: [15, 15], className: ''
+    });
+    L.marker(start, { icon: markerIcon('S') }).addTo(this.routeLayer).bindPopup('Start');
+    L.marker(end, { icon: markerIcon('E') }).addTo(this.routeLayer).bindPopup('End');
   }
 }

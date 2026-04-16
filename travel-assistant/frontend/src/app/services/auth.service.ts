@@ -28,6 +28,13 @@ export class AuthService {
     );
   }
 
+  socialLogin(data: { token: string; userId: number; name: string; email: string; role?: string }) {
+    localStorage.setItem('token', data.token);
+    const user: User = { id: data.userId, name: data.name, email: data.email, role: data.role || 'USER' };
+    localStorage.setItem('user', JSON.stringify(user));
+    this.currentUserSubject.next(user);
+  }
+
   private saveSession(data: AuthResponse) {
     localStorage.setItem('token', data.token);
     const user: User = { id: data.userId, name: data.name, email: data.email, role: data.role };

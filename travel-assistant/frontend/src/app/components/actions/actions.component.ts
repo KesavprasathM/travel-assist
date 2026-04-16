@@ -1,8 +1,11 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { forkJoin, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { LeafletMapComponent } from '../map/map.component';
 import { WeatherWidgetComponent } from '../weather/weather-widget.component';
+import { WeatherApiService } from '../../services/weather.service';
 
 @Component({
   selector: 'app-actions',
@@ -31,17 +34,26 @@ import { WeatherWidgetComponent } from '../weather/weather-widget.component';
         <div class="card-header">
           <div>
             <h2>Interactive map preview</h2>
-            <p>Choose a live route and watch the map update instantly.</p>
+            <p>Enter a route and watch the map update instantly.</p>
           </div>
-          <select [(ngModel)]="selectedRouteKey" (ngModelChange)="updateRoute()">
-            <option *ngFor="let route of routes" [value]="route.key">{{ route.label }}</option>
-          </select>
         </div>
-        <app-leaflet-map [lat]="mapCenter[0]" [lon]="mapCenter[1]" [name]="mapName" [pois]="pois"></app-leaflet-map>
+        <div class="route-inputs-card">
+          <div class="route-field">
+            <label>From</label>
+            <input type="text" [(ngModel)]="routeFrom" placeholder="Enter start location" />
+          </div>
+          <div class="route-field">
+            <label>To</label>
+            <input type="text" [(ngModel)]="routeTo" placeholder="Enter destination" />
+          </div>
+          <button class="btn btn-secondary" (click)="updateUserRoute()">Update Route</button>
+        </div>
+        <app-leaflet-map [lat]="mapCenter[0]" [lon]="mapCenter[1]" [name]="mapName" [pois]="pois" [routePath]="routePath"></app-leaflet-map>
         <div class="route-summary">
-          <div><strong>Distance</strong> {{selectedRoute?.distance}}</div>
-          <div><strong>Estimated time</strong> {{selectedRoute?.duration}}</div>
-          <div><strong>Route note</strong> {{selectedRoute?.tip}}</div>
+          <div><strong>Route</strong> {{ routeFrom }} → {{ routeTo }}</div>
+          <div *ngIf="!customRoute && selectedRoute"><strong>Distance</strong> {{ selectedRoute?.distance }}</div>
+          <div *ngIf="!customRoute && selectedRoute"><strong>Estimated time</strong> {{ selectedRoute?.duration }}</div>
+          <div><strong>Note</strong> {{ customRoute ? 'Custom route updated.' : selectedRoute?.tip }}</div>
         </div>
       </div>
 
@@ -49,13 +61,14 @@ import { WeatherWidgetComponent } from '../weather/weather-widget.component';
         <div class="card-header">
           <div>
             <h2>Climate outlook</h2>
-            <p>Live local weather and travel recommendations from the project data sources.</p>
+            <p>Enter any destination and get live weather instantly.</p>
           </div>
-          <select [(ngModel)]="climateCity" (ngModelChange)="updateClimateCity($event)">
-            <option *ngFor="let city of cities" [value]="city">{{ city }}</option>
-          </select>
+          <div class="climate-input-group">
+            <input type="text" [(ngModel)]="climateDestination" placeholder="Enter destination" />
+            <button class="btn btn-secondary" (click)="updateClimateDestination(climateDestination)">Update</button>
+          </div>
         </div>
-        <app-weather-widget [city]="climateCity"></app-weather-widget>
+        <app-weather-widget [city]="climateDestination"></app-weather-widget>
         <div class="climate-details">
           <div><strong>Local advisory</strong> {{climateSummary.advisory}}</div>
           <div><strong>Wardrobe</strong> {{climateSummary.wardrobe}}</div>
@@ -95,7 +108,13 @@ import { WeatherWidgetComponent } from '../weather/weather-widget.component';
     .card-header { display: flex; align-items: center; justify-content: space-between; gap: 18px; margin-bottom: 18px; }
     .card-header h2 { margin: 0; font-size: 1.6rem; }
     .card-header p { color: #556b87; margin: 6px 0 0; }
-    .card-header select { border: 1px solid #e2e8f0; border-radius: 14px; padding: 10px 14px; background: white; color: #1f2937; font-weight: 600; }
+    .card-header select, .climate-input-group input { border: 1px solid #e2e8f0; border-radius: 14px; padding: 10px 14px; background: white; color: #1f2937; font-weight: 600; }
+    .route-inputs-card { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; }
+    .route-field { display: flex; flex-direction: column; gap: 8px; flex: 1; min-width: 140px; }
+    .route-field label { font-size: 12px; color: #475569; font-weight: 700; letter-spacing: 0.06em; }
+    .route-field input { border: 1px solid #e2e8f0; border-radius: 14px; padding: 12px 14px; background: white; color: #1f2937; }
+    .climate-input-group { display: flex; gap: 10px; align-items: center; }
+    .climate-input-group input { flex: 1; }
     .map-card app-leaflet-map { border-radius: 24px; overflow: hidden; }
     .route-summary { display: grid; gap: 10px; margin-top: 18px; color: #334155; }
     .climate-details { display: grid; gap: 12px; margin-top: 18px; color: #374151; }
@@ -131,8 +150,6 @@ export class ActionsComponent {
   ];
 
   cities = ['Bengaluru', 'Mumbai', 'Delhi', 'Goa', 'Jaipur'];
-  climateCity = 'Bengaluru';
-  climateSummary = this.getClimateSummary(this.climateCity);
 
   routes = [
     { key: 'BLR-GOA', label: 'Bengaluru → Goa', center: [15.2993, 74.1240], name: 'Goa', distance: '560 km', duration: '10h', tip: 'Expect coastal humidity and brighter skies.', pois: [
@@ -150,9 +167,18 @@ export class ActionsComponent {
   ];
 
   selectedRouteKey = this.routes[0].key;
+  routeFrom = this.routes[0].label.split(' → ')[0];
+  routeTo = this.routes[0].label.split(' → ')[1];
+  climateDestination = this.routes[0].name;
+  climateSummary = this.getClimateSummary(this.climateDestination);
   mapCenter = this.routes[0].center;
-  mapName = this.routes[0].name;
+  mapName = this.routes[0].label;
+  routePath: [number, number][] = [
+    [this.routes[0].pois[0].lat, this.routes[0].pois[0].lon],
+    [this.routes[0].pois[1].lat, this.routes[0].pois[1].lon]
+  ];
   pois = this.routes[0].pois;
+  customRoute = false;
 
   get selectedRoute() {
     return this.routes.find(r => r.key === this.selectedRouteKey);
@@ -165,15 +191,40 @@ export class ActionsComponent {
   updateRoute() {
     const route = this.selectedRoute;
     if (route) {
+      this.routeFrom = route.label.split(' → ')[0];
+      this.routeTo = route.label.split(' → ')[1];
       this.mapCenter = route.center;
       this.mapName = route.name;
+      this.routePath = [route.center];
       this.pois = route.pois;
     }
   }
 
-  updateClimateCity(city: string) {
-    this.climateCity = city;
-    this.climateSummary = this.getClimateSummary(city);
+  updateUserRoute() {
+    if (!this.routeFrom || !this.routeTo) return;
+    const from$ = this.weatherApi.getCoordinates(this.routeFrom).pipe(catchError(() => of({data:[0,0]})));
+    const to$ = this.weatherApi.getCoordinates(this.routeTo).pipe(catchError(() => of({data:[0,0]})));
+    forkJoin([from$, to$]).subscribe(([fromRes, toRes]) => {
+      const fromCoords = fromRes.data || [0,0];
+      const toCoords = toRes.data || [0,0];
+      if (!fromCoords[0] || !toCoords[0]) return;
+      const midLat = (fromCoords[0] + toCoords[0]) / 2;
+      const midLon = (fromCoords[1] + toCoords[1]) / 2;
+      this.mapCenter = [midLat, midLon];
+      this.mapName = `${this.routeFrom} → ${this.routeTo}`;
+      this.routePath = [fromCoords, toCoords];
+      this.pois = [
+        { name: this.routeFrom, type: 'ATTRACTION', lat: fromCoords[0], lon: fromCoords[1] },
+        { name: this.routeTo, type: 'ATTRACTION', lat: toCoords[0], lon: toCoords[1] }
+      ];
+      this.selectedRouteKey = '';
+      this.customRoute = true;
+    });
+  }
+
+  updateClimateDestination(destination: string) {
+    this.climateDestination = destination;
+    this.climateSummary = this.getClimateSummary(destination);
   }
 
   toggleChecklist(item: any) {
